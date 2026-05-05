@@ -1,0 +1,17 @@
+package com.carbooking.common.enums;
+
+public enum BookingStatus {
+    DRAFT,
+    PENDING_APPROVAL,
+    APPROVED,
+    DRIVER_ASSIGNED,
+    DRIVER_EN_ROUTE,
+    ARRIVED,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELLED_BY_EMPLOYEE,
+    CANCELLED_BY_ADMIN,
+    CANCELLED_BY_FLEET_MANAGER,
+    CANCELLED_BY_DRIVER,
+    REJECTED
+}

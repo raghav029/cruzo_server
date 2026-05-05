@@ -1,0 +1,2 @@
+-- Seed data is handled by Flyway migration V2__seed_super_admin.sql
+-- This file is intentionally empty.
