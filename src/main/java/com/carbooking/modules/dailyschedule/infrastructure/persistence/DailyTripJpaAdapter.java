@@ -7,7 +7,6 @@ import com.carbooking.entity.Driver;
 import com.carbooking.entity.Tenant;
 import com.carbooking.modules.dailyschedule.domain.port.DailyTripPort;
 import com.carbooking.repository.DailyTripRepository;
-import com.carbooking.modules.dailyschedule.domain.port.DailyTripPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -29,4 +28,6 @@ public class DailyTripJpaAdapter implements DailyTripPort {
     @Override public long countByTenantAndTripDate(Tenant tenant, LocalDate date) { return repo.countByTenantAndTripDate(tenant, date); }
     @Override public long countByTenantAndTripDateAndDriverIsNull(Tenant tenant, LocalDate date) { return repo.countByTenantAndTripDateAndDriverIsNull(tenant, date); }
     @Override public DailyTrip save(DailyTrip trip) { return repo.save(trip); }
+    @Override public List<Object[]> countGroupedByDay(UUID tenantId, LocalDate from, LocalDate to) { return repo.countGroupedByDay(tenantId, from, to); }
+    @Override public List<Object[]> countUnassignedGroupedByDay(UUID tenantId, LocalDate from, LocalDate to) { return repo.countUnassignedGroupedByDay(tenantId, from, to); }
 }

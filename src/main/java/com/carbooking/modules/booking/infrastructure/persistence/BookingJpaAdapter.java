@@ -40,4 +40,6 @@ public class BookingJpaAdapter implements BookingPort {
     @Override public BigDecimal sumFinalFareByTenantAndStatusAndTripCompletedAtBetween(Tenant tenant, BookingStatus status, Instant from, Instant to) { return repo.sumFinalFareByTenantAndStatusAndTripCompletedAtBetween(tenant, status, from, to); }
     @Override public long countActiveByTenant(Tenant tenant) { return repo.countActiveByTenant(tenant); }
     @Override public Booking save(Booking booking) { return repo.save(booking); }
+    @Override public List<Object[]> countGroupedByHour(UUID tenantId, String tz, Instant from, Instant to) { return repo.countGroupedByHour(tenantId, tz, from, to); }
+    @Override public List<Object[]> sumRevenueGroupedByDay(UUID tenantId, String tz, Instant from, Instant to) { return repo.sumRevenueGroupedByDay(tenantId, tz, from, to); }
 }

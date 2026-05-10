@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -50,4 +51,18 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.tenant = :tenant AND b.status NOT IN " +
            "('COMPLETED','CANCELLED_BY_EMPLOYEE','CANCELLED_BY_ADMIN','CANCELLED_BY_FLEET_MANAGER','CANCELLED_BY_DRIVER','REJECTED')")
     long countActiveByTenant(Tenant tenant);
+
+    @Query(value = "SELECT EXTRACT(HOUR FROM scheduled_at AT TIME ZONE :tz)::int AS hr, COUNT(*)::int AS cnt " +
+                   "FROM bookings WHERE tenant_id = :tenantId AND scheduled_at >= :from AND scheduled_at < :to " +
+                   "GROUP BY hr ORDER BY hr", nativeQuery = true)
+    List<Object[]> countGroupedByHour(@Param("tenantId") UUID tenantId, @Param("tz") String tz,
+                                      @Param("from") Instant from, @Param("to") Instant to);
+
+    @Query(value = "SELECT DATE(trip_completed_at AT TIME ZONE :tz) AS day, " +
+                   "COALESCE(SUM(final_fare), 0)::bigint AS rev " +
+                   "FROM bookings WHERE tenant_id = :tenantId AND status = 'COMPLETED' " +
+                   "AND trip_completed_at >= :from AND trip_completed_at < :to " +
+                   "GROUP BY day ORDER BY day", nativeQuery = true)
+    List<Object[]> sumRevenueGroupedByDay(@Param("tenantId") UUID tenantId, @Param("tz") String tz,
+                                          @Param("from") Instant from, @Param("to") Instant to);
 }

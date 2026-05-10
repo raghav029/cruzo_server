@@ -31,4 +31,6 @@ public interface BookingPort {
     BigDecimal sumFinalFareByTenantAndStatusAndTripCompletedAtBetween(Tenant tenant, BookingStatus status, Instant from, Instant to);
     long countActiveByTenant(Tenant tenant);
     Booking save(Booking booking);
+    List<Object[]> countGroupedByHour(UUID tenantId, String tz, Instant from, Instant to);
+    List<Object[]> sumRevenueGroupedByDay(UUID tenantId, String tz, Instant from, Instant to);
 }

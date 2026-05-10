@@ -19,4 +19,6 @@ public interface DailyTripPort {
     long countByTenantAndTripDate(Tenant tenant, LocalDate date);
     long countByTenantAndTripDateAndDriverIsNull(Tenant tenant, LocalDate date);
     DailyTrip save(DailyTrip trip);
+    List<Object[]> countGroupedByDay(UUID tenantId, LocalDate from, LocalDate to);
+    List<Object[]> countUnassignedGroupedByDay(UUID tenantId, LocalDate from, LocalDate to);
 }
