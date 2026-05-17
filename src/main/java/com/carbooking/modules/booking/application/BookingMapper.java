@@ -19,6 +19,7 @@ public class BookingMapper {
                 .employeeName(booking.getEmployee().getFullName())
                 .driverId(booking.getDriver() != null ? booking.getDriver().getId() : null)
                 .driverName(booking.getDriver() != null ? booking.getDriver().getUser().getFullName() : null)
+                .driverPhone(booking.getDriver() != null ? booking.getDriver().getUser().getPhone() : null)
                 .vehicleId(booking.getVehicle() != null ? booking.getVehicle().getId() : null)
                 .vehiclePlate(booking.getVehicle() != null ? booking.getVehicle().getPlateNumber() : null)
                 .assignmentMode(booking.getAssignmentMode())
@@ -47,6 +48,8 @@ public class BookingMapper {
                 .driverCurrentLat(booking.getDriverCurrentLat())
                 .driverCurrentLng(booking.getDriverCurrentLng())
                 .locationUpdatedAt(booking.getLocationUpdatedAt())
+                .boardingOtp(booking.getBoardingOtp())
+                .dropOtp(booking.getDropOtp())
                 .otpVerifiedAt(booking.getOtpVerifiedAt())
                 .build();
     }

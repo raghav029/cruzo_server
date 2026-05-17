@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class CreateCorporateEmployeeRequest {
@@ -28,4 +30,7 @@ public class CreateCorporateEmployeeRequest {
     private String designation;
 
     private Integer monthlyRideLimit;
+
+    private BigDecimal maxBookingValueOverride;
+    private String allowedVehicleTypesOverride;
 }

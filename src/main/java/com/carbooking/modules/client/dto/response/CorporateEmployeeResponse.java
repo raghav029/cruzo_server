@@ -3,6 +3,7 @@ package com.carbooking.modules.client.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -21,6 +22,8 @@ public class CorporateEmployeeResponse {
     private String designation;
     private Integer monthlyRideLimit;
     private boolean active;
+    private BigDecimal maxBookingValueOverride;
+    private String allowedVehicleTypesOverride;
     private Instant createdAt;
     private Instant updatedAt;
 }

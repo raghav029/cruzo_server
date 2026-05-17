@@ -32,7 +32,14 @@ public class BookingJpaAdapter implements BookingPort {
     @Override public Page<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status, Pageable pageable) { return repo.findByTenantAndStatus(tenant, status, pageable); }
     @Override public Page<Booking> findByTenantAndScheduledAtBetween(Tenant tenant, Instant from, Instant to, Pageable pageable) { return repo.findByTenantAndScheduledAtBetween(tenant, from, to, pageable); }
     @Override public Page<Booking> findByTenantAndStatusAndScheduledAtBetween(Tenant tenant, BookingStatus status, Instant from, Instant to, Pageable pageable) { return repo.findByTenantAndStatusAndScheduledAtBetween(tenant, status, from, to, pageable); }
+    @Override public Page<Booking> findByDriver(Driver driver, Pageable pageable) { return repo.findByDriver(driver, pageable); }
+    @Override public Page<Booking> findByDriverAndStatus(Driver driver, BookingStatus status, Pageable pageable) { return repo.findByDriverAndStatus(driver, status, pageable); }
+    @Override public List<Booking> findByEmployeeAndStatusIn(User employee, List<BookingStatus> statuses) { return repo.findByEmployeeAndStatusIn(employee, statuses); }
     @Override public Optional<Booking> findFirstByDriverAndStatusIn(Driver driver, List<BookingStatus> statuses) { return repo.findFirstByDriverAndStatusIn(driver, statuses); }
+    @Override public long countByDriverAndStatus(Driver driver, BookingStatus status) { return repo.countByDriverAndStatus(driver, status); }
+    @Override public long countByDriverAndStatusAndTripCompletedAtAfter(Driver driver, BookingStatus status, java.time.Instant after) { return repo.countByDriverAndStatusAndTripCompletedAtAfter(driver, status, after); }
+    @Override public java.math.BigDecimal sumFinalFareByDriverAndStatus(Driver driver, BookingStatus status) { return repo.sumFinalFareByDriverAndStatus(driver, status); }
+    @Override public java.math.BigDecimal sumFinalFareByDriverAndStatusAndTripCompletedAtAfter(Driver driver, BookingStatus status, java.time.Instant after) { return repo.sumFinalFareByDriverAndStatusAndTripCompletedAtAfter(driver, status, after); }
     @Override public List<Booking> findUninvoicedCompletedBookings(CorporateClient client, Instant from, Instant to) { return repo.findUninvoicedCompletedBookings(client, from, to); }
     @Override public long countByTenant(Tenant tenant) { return repo.countByTenant(tenant); }
     @Override public long countByTenantAndStatus(Tenant tenant, BookingStatus status) { return repo.countByTenantAndStatus(tenant, status); }

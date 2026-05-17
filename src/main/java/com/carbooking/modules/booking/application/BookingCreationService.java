@@ -4,15 +4,18 @@ import com.carbooking.common.enums.BookingStatus;
 import com.carbooking.common.enums.VehicleType;
 import com.carbooking.common.exception.BusinessRuleException;
 import com.carbooking.common.exception.ResourceNotFoundException;
+import com.carbooking.common.util.SecurityUtils;
 import com.carbooking.common.util.TenantSupport;
 import com.carbooking.entity.Booking;
 import com.carbooking.entity.CorporateClient;
+import com.carbooking.entity.CorporateEmployee;
 import com.carbooking.entity.Tenant;
 import com.carbooking.modules.booking.dto.request.CreateBookingRequest;
 import com.carbooking.modules.booking.dto.response.BookingResponse;
 import com.carbooking.modules.booking.application.BookingMapper;
 import com.carbooking.modules.booking.domain.port.BookingPort;
 import com.carbooking.modules.client.domain.port.CorporateClientPort;
+import com.carbooking.modules.client.domain.port.CorporateEmployeePort;
 import com.carbooking.modules.config.domain.port.PricingConfigPort;
 import com.carbooking.modules.notification.application.NotificationService;
 import org.springframework.stereotype.Service;
@@ -21,12 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class BookingCreationService extends TenantSupport {
 
     private final BookingPort bookingRepository;
     private final CorporateClientPort corporateClientRepository;
+    private final CorporateEmployeePort corporateEmployeeRepository;
     private final PricingConfigPort pricingConfigRepository;
     private final BookingHistoryHelper historyHelper;
     private final NotificationService notificationService;
@@ -35,12 +41,14 @@ public class BookingCreationService extends TenantSupport {
     public BookingCreationService(
             BookingPort bookingRepository,
             CorporateClientPort corporateClientRepository,
+            CorporateEmployeePort corporateEmployeeRepository,
             PricingConfigPort pricingConfigRepository,
             BookingHistoryHelper historyHelper,
             NotificationService notificationService,
             BookingMapper bookingMapper) {
         this.bookingRepository = bookingRepository;
         this.corporateClientRepository = corporateClientRepository;
+        this.corporateEmployeeRepository = corporateEmployeeRepository;
         this.pricingConfigRepository = pricingConfigRepository;
         this.historyHelper = historyHelper;
         this.notificationService = notificationService;
@@ -57,6 +65,38 @@ public class BookingCreationService extends TenantSupport {
 
         if (request.getScheduledAt().isBefore(Instant.now().plus(2, ChronoUnit.HOURS))) {
             throw new BusinessRuleException("Booking must be scheduled at least 2 hours in advance");
+        }
+
+        // Travel policy enforcement (skip for FLEET_MANAGER and CORPORATE_ADMIN)
+        String currentRole = SecurityUtils.getCurrentRole();
+        if (!"FLEET_MANAGER".equals(currentRole) && !"CORPORATE_ADMIN".equals(currentRole)) {
+            CorporateEmployee employee = corporateEmployeeRepository.findByUser(currentUser())
+                    .orElseThrow(() -> new ResourceNotFoundException("Employee profile not found"));
+
+            BigDecimal effectiveMax = employee.getMaxBookingValueOverride() != null
+                    ? employee.getMaxBookingValueOverride()
+                    : client.getMaxBookingValue();
+
+            String effectiveTypes = employee.getAllowedVehicleTypesOverride() != null
+                    ? employee.getAllowedVehicleTypesOverride()
+                    : client.getAllowedVehicleTypes();
+
+            if (effectiveTypes != null && !effectiveTypes.isBlank()) {
+                List<String> allowed = Arrays.asList(effectiveTypes.split(","));
+                if (!allowed.contains(request.getVehicleTypeRequested().name())) {
+                    throw new BusinessRuleException(
+                            "Vehicle type " + request.getVehicleTypeRequested() + " is not allowed by your travel policy");
+                }
+            }
+
+            if (effectiveMax != null) {
+                BigDecimal estimated = estimateFare(tenant, request.getVehicleTypeRequested());
+                if (estimated != null && estimated.compareTo(effectiveMax) > 0) {
+                    throw new BusinessRuleException(
+                            "Estimated fare ₹" + estimated.setScale(0, java.math.RoundingMode.HALF_UP)
+                            + " exceeds your travel policy limit of ₹" + effectiveMax.setScale(0, java.math.RoundingMode.HALF_UP));
+                }
+            }
         }
 
         Booking booking = Booking.builder()

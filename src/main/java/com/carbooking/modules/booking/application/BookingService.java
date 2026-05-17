@@ -57,6 +57,11 @@ public class BookingService {
         return bookingQueryService.getMyActiveTrip();
     }
 
+    @Transactional(readOnly = true)
+    public List<BookingResponse> myActive() {
+        return bookingQueryService.myActive();
+    }
+
     @Transactional
     public BookingResponse updateDriverLocation(UUID bookingId, UpdateDriverLocationRequest request) {
         return bookingDriverLocationService.updateDriverLocation(bookingId, request);
@@ -88,8 +93,18 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse verifyOtp(UUID bookingId, VerifyOtpRequest request) {
-        return bookingOtpVerificationService.verifyOtp(bookingId, request);
+    public BookingResponse verifyBoardingOtp(UUID bookingId, VerifyOtpRequest request) {
+        return bookingOtpVerificationService.verifyBoardingOtp(bookingId, request);
+    }
+
+    @Transactional
+    public BookingResponse verifyDropOtp(UUID bookingId, VerifyOtpRequest request) {
+        return bookingOtpVerificationService.verifyDropOtp(bookingId, request);
+    }
+
+    @Transactional
+    public BookingResponse refreshBoardingOtp(UUID bookingId) {
+        return bookingOtpVerificationService.refreshBoardingOtp(bookingId);
     }
 
     @Transactional

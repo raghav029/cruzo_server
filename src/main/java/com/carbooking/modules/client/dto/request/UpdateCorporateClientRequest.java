@@ -27,4 +27,7 @@ public class UpdateCorporateClientRequest {
     private BigDecimal creditLimit;
 
     private Boolean active;
+
+    private BigDecimal maxBookingValue;
+    private String allowedVehicleTypes;
 }

@@ -23,6 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.carbooking.common.enums.VehicleType;
+import com.carbooking.common.exception.BusinessRuleException;
+import java.util.Arrays;
 import java.util.UUID;
 import com.carbooking.modules.client.application.CorporateClientMapper;
 
@@ -101,6 +104,11 @@ public class CorporateClientService extends TenantSupport {
         if (request.getBillingCycle() != null) client.setBillingCycle(request.getBillingCycle());
         if (request.getCreditLimit() != null) client.setCreditLimit(request.getCreditLimit());
         if (request.getActive() != null) client.setActive(request.getActive());
+        if (request.getMaxBookingValue() != null) client.setMaxBookingValue(request.getMaxBookingValue());
+        if (request.getAllowedVehicleTypes() != null) {
+            validateAllowedVehicleTypes(request.getAllowedVehicleTypes());
+            client.setAllowedVehicleTypes(request.getAllowedVehicleTypes().isBlank() ? null : request.getAllowedVehicleTypes().trim());
+        }
 
         return clientMapper.toResponse(clientRepository.save(client));
     }
@@ -135,6 +143,7 @@ public class CorporateClientService extends TenantSupport {
                 .passwordHash(passwordEncoder.encode(tempPassword))
                 .role(Role.CORPORATE_ADMIN)
                 .status(UserStatus.ACTIVE)
+                .corporateClient(client)
                 .build();
         userRepository.save(admin);
         notificationService.sendTempPassword(admin, tempPassword);
@@ -150,6 +159,27 @@ public class CorporateClientService extends TenantSupport {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public CorporateClientResponse getMy() {
+        User user = currentUser();
+        CorporateClient client = user.getCorporateClient();
+        if (client == null) throw new ResourceNotFoundException("No corporate client linked to this user");
+        return clientMapper.toResponse(client);
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────────
+
+    private void validateAllowedVehicleTypes(String value) {
+        if (value == null || value.isBlank()) return;
+        Arrays.stream(value.split(","))
+            .map(String::trim)
+            .forEach(v -> {
+                try {
+                    VehicleType.valueOf(v);
+                } catch (IllegalArgumentException e) {
+                    throw new BusinessRuleException("Invalid vehicle type: " + v + ". Allowed: SEDAN, SUV, LUXURY");
+                }
+            });
+    }
 
 }

@@ -42,6 +42,7 @@ com/carbooking/modules/invoice/application/InvoiceService.class
 com/carbooking/scheduler/RecurringBookingScheduler$1.class
 com/carbooking/entity/DailyTripSkipDate.class
 com/carbooking/modules/sos/dto/response/SosAlertResponse.class
+com/carbooking/modules/client/dto/request/UpdateEmployeeSelfRequest.class
 com/carbooking/modules/fleet/infrastructure/persistence/VehicleJpaAdapter.class
 com/carbooking/common/enums/BillingCycle.class
 com/carbooking/modules/booking/application/BookingAssignmentService.class
@@ -87,6 +88,7 @@ com/carbooking/modules/config/dto/request/UpdateCancellationConfigRequest.class
 com/carbooking/modules/booking/application/BookingMapper.class
 com/carbooking/modules/sos/controller/SosAlertController.class
 com/carbooking/repository/PricingConfigRepository.class
+com/carbooking/modules/client/dto/response/TravelPolicyResponse$TravelPolicyResponseBuilder.class
 com/carbooking/modules/booking/infrastructure/persistence/BookingJpaAdapter.class
 com/carbooking/CarBookingApplication.class
 com/carbooking/repository/DailyTripPassengerRepository.class
@@ -155,6 +157,7 @@ com/carbooking/common/enums/DailyTripPassengerStatus.class
 com/carbooking/modules/booking/dto/response/BookingStatusHistoryResponse$BookingStatusHistoryResponseBuilder.class
 com/carbooking/modules/fleet/dto/response/DriverResponse$DriverResponseBuilder.class
 com/carbooking/modules/dailyschedule/dto/request/VerifyDailyTripOtpRequest.class
+com/carbooking/modules/fleet/dto/request/UpdateDriverSelfRequest.class
 com/carbooking/common/util/SecurityUtils.class
 com/carbooking/modules/booking/application/BookingCancellationService.class
 com/carbooking/modules/client/dto/response/CorporateClientResponse$CorporateClientResponseBuilder.class
@@ -179,6 +182,7 @@ com/carbooking/entity/CorporateEmployee.class
 com/carbooking/modules/document/dto/response/ExpiringDocumentsResponse.class
 com/carbooking/modules/client/dto/response/CorporateAdminResponse$CorporateAdminResponseBuilder.class
 com/carbooking/modules/invoice/dto/response/InvoiceLineItemResponse$InvoiceLineItemResponseBuilder.class
+com/carbooking/modules/client/dto/response/TravelPolicyResponse.class
 com/carbooking/modules/client/application/CorporateClientMapper.class
 com/carbooking/modules/fleet/application/VehicleMapper.class
 com/carbooking/modules/config/application/CancellationConfigMapper.class
@@ -239,6 +243,7 @@ com/carbooking/modules/report/dto/response/FleetSummaryResponse$FleetSummaryResp
 com/carbooking/config/AuditConfig.class
 com/carbooking/modules/dailyschedule/dto/request/AssignDriverToDailyTripRequest.class
 com/carbooking/modules/config/controller/PricingConfigController.class
+com/carbooking/modules/booking/application/BookingOtpVerificationService$1.class
 com/carbooking/modules/report/dto/response/FleetSummaryResponse$VehicleUtilization.class
 com/carbooking/modules/dailyschedule/infrastructure/persistence/DailySchedulePassengerJpaAdapter.class
 com/carbooking/entity/Driver$DriverBuilder.class

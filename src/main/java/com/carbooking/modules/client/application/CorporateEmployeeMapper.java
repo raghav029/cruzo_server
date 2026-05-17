@@ -21,6 +21,8 @@ public class CorporateEmployeeMapper {
                 .designation(e.getDesignation())
                 .monthlyRideLimit(e.getMonthlyRideLimit())
                 .active(e.isActive())
+                .maxBookingValueOverride(e.getMaxBookingValueOverride())
+                .allowedVehicleTypesOverride(e.getAllowedVehicleTypesOverride())
                 .createdAt(e.getCreatedAt())
                 .updatedAt(e.getUpdatedAt())
                 .build();

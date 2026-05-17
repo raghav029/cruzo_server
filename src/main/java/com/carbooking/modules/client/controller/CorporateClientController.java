@@ -65,4 +65,10 @@ public class CorporateClientController {
             @Valid @RequestBody CreateCorporateAdminRequest request) {
         return ResponseHelper.created(clientService.createAdmin(clientId, request));
     }
+
+    @PreAuthorize("hasRole('CORPORATE_ADMIN')")
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<CorporateClientResponse>> getMy() {
+        return ResponseHelper.ok(clientService.getMy());
+    }
 }

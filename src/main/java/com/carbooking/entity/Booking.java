@@ -113,6 +113,9 @@ public class Booking extends AuditableEntity {
     @Column(name = "location_updated_at")
     private Instant locationUpdatedAt;
 
+    @Column(name = "boarding_otp")
+    private String boardingOtp;
+
     @Column(name = "drop_otp")
     private String dropOtp;
 

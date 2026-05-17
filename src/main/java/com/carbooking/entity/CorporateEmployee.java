@@ -4,6 +4,8 @@ import com.carbooking.common.util.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "corporate_employees")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -32,4 +34,10 @@ public class CorporateEmployee extends AuditableEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
+
+    @Column(name = "max_booking_value_override", precision = 12, scale = 2)
+    private BigDecimal maxBookingValueOverride;
+
+    @Column(name = "allowed_vehicle_types_override")
+    private String allowedVehicleTypesOverride;
 }

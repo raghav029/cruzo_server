@@ -40,4 +40,10 @@ public class CorporateClient extends AuditableEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
+
+    @Column(name = "max_booking_value", precision = 12, scale = 2)
+    private BigDecimal maxBookingValue;
+
+    @Column(name = "allowed_vehicle_types")
+    private String allowedVehicleTypes;
 }

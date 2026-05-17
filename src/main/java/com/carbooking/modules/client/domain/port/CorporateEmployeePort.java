@@ -14,4 +14,5 @@ public interface CorporateEmployeePort {
     Page<CorporateEmployee> findByCorporateClient(CorporateClient client, Pageable pageable);
     boolean existsByCorporateClientAndEmployeeCode(CorporateClient client, String employeeCode);
     CorporateEmployee save(CorporateEmployee employee);
+    Optional<CorporateEmployee> findByUser(User user);
 }

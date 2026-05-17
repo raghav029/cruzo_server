@@ -21,6 +21,8 @@ public class CorporateClientResponse {
     private BigDecimal creditLimit;
     private BigDecimal currentOutstanding;
     private boolean active;
+    private BigDecimal maxBookingValue;
+    private String allowedVehicleTypes;
     private Instant createdAt;
     private Instant updatedAt;
 }

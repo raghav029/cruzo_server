@@ -19,6 +19,8 @@ public class CorporateClientMapper {
                 .creditLimit(c.getCreditLimit())
                 .currentOutstanding(c.getCurrentOutstanding())
                 .active(c.isActive())
+                .maxBookingValue(c.getMaxBookingValue())
+                .allowedVehicleTypes(c.getAllowedVehicleTypes())
                 .createdAt(c.getCreatedAt())
                 .updatedAt(c.getUpdatedAt())
                 .build();

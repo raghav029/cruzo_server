@@ -141,12 +141,11 @@ public class DailyTripService extends TenantSupport {
 
         LocalDate today = LocalDate.now(ZoneId.of(tenant.getTimezone()));
 
-        DailyTrip trip = dailyTripRepository.findFirstByDriverAndTripDateAndStatusIn(
+        return dailyTripRepository.findFirstByDriverAndTripDateAndStatusIn(
                 driver, today,
                 Arrays.asList(DailyTripStatus.DRIVER_ASSIGNED, DailyTripStatus.IN_PROGRESS))
-                .orElseThrow(() -> new ResourceNotFoundException("No trip found for today"));
-
-        return buildTripResponse(trip);
+                .map(this::buildTripResponse)
+                .orElse(null);
     }
 
     @Transactional
@@ -233,6 +232,16 @@ public class DailyTripService extends TenantSupport {
         checkAndAutoComplete(trip);
 
         return buildTripResponse(dailyTripRepository.findById(tripId).orElseThrow());
+    }
+
+    @Transactional
+    public DailyTripResponse startTrip(UUID tripId) {
+        DailyTrip trip = findTrip(tripId);
+        if (trip.getStatus() != DailyTripStatus.DRIVER_ASSIGNED) {
+            throw new BusinessRuleException("Trip must be in DRIVER_ASSIGNED status to start");
+        }
+        trip.setStatus(DailyTripStatus.IN_PROGRESS);
+        return buildTripResponse(dailyTripRepository.save(trip));
     }
 
     @Transactional

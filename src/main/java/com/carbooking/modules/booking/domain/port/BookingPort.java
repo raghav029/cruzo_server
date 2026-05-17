@@ -23,7 +23,14 @@ public interface BookingPort {
     Page<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status, Pageable pageable);
     Page<Booking> findByTenantAndScheduledAtBetween(Tenant tenant, Instant from, Instant to, Pageable pageable);
     Page<Booking> findByTenantAndStatusAndScheduledAtBetween(Tenant tenant, BookingStatus status, Instant from, Instant to, Pageable pageable);
+    Page<Booking> findByDriver(Driver driver, Pageable pageable);
+    Page<Booking> findByDriverAndStatus(Driver driver, BookingStatus status, Pageable pageable);
     Optional<Booking> findFirstByDriverAndStatusIn(Driver driver, List<BookingStatus> statuses);
+    long countByDriverAndStatus(Driver driver, BookingStatus status);
+    long countByDriverAndStatusAndTripCompletedAtAfter(Driver driver, BookingStatus status, Instant after);
+    BigDecimal sumFinalFareByDriverAndStatus(Driver driver, BookingStatus status);
+    BigDecimal sumFinalFareByDriverAndStatusAndTripCompletedAtAfter(Driver driver, BookingStatus status, Instant after);
+    List<Booking> findByEmployeeAndStatusIn(User employee, List<BookingStatus> statuses);
     List<Booking> findUninvoicedCompletedBookings(CorporateClient client, Instant from, Instant to);
     long countByTenant(Tenant tenant);
     long countByTenantAndStatus(Tenant tenant, BookingStatus status);

@@ -12,7 +12,10 @@ import com.carbooking.entity.Tenant;
 import com.carbooking.entity.User;
 import com.carbooking.modules.fleet.dto.request.CreateDriverRequest;
 import com.carbooking.modules.fleet.dto.request.UpdateDriverRequest;
+import com.carbooking.modules.fleet.dto.request.UpdateDriverSelfRequest;
 import com.carbooking.modules.fleet.dto.response.DriverResponse;
+import com.carbooking.modules.fleet.dto.response.DriverStatsResponse;
+import com.carbooking.common.enums.BookingStatus;
 import com.carbooking.modules.booking.domain.port.BookingPort;
 import com.carbooking.modules.fleet.domain.port.DriverPort;
 import com.carbooking.modules.notification.application.NotificationService;
@@ -24,6 +27,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import com.carbooking.modules.fleet.application.DriverMapper;
 
@@ -97,6 +103,58 @@ public class DriverService extends TenantSupport {
     }
 
     @Transactional(readOnly = true)
+    public DriverResponse getMe() {
+        User user = currentUser();
+        Driver driver = driverRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
+        return driverMapper.toResponse(driver);
+    }
+
+    @Transactional
+    public DriverResponse updateMe(UpdateDriverSelfRequest request) {
+        User user = currentUser();
+        Driver driver = driverRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
+        if (request.getPhone() != null) driver.getUser().setPhone(request.getPhone());
+        return driverMapper.toResponse(driverRepository.save(driver));
+    }
+
+    @Transactional
+    public DriverResponse updateMyAvailability(DriverAvailability availability) {
+        User user = currentUser();
+        Driver driver = driverRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
+        if (driver.getAvailability() == DriverAvailability.ON_TRIP) {
+            throw new BusinessRuleException("Cannot change availability while ON_TRIP");
+        }
+        driver.setAvailability(availability);
+        return driverMapper.toResponse(driverRepository.save(driver));
+    }
+
+    @Transactional(readOnly = true)
+    public DriverStatsResponse getMyStats() {
+        User user = currentUser();
+        Driver driver = driverRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
+
+        long totalTrips = bookingRepository.countByDriverAndStatus(driver, BookingStatus.COMPLETED);
+        BigDecimal totalEarnings = bookingRepository.sumFinalFareByDriverAndStatus(driver, BookingStatus.COMPLETED);
+
+        Instant monthStart = Instant.now().truncatedTo(ChronoUnit.DAYS)
+                .minus(Instant.now().atZone(java.time.ZoneOffset.UTC).getDayOfMonth() - 1L, ChronoUnit.DAYS);
+        long tripsThisMonth = bookingRepository.countByDriverAndStatusAndTripCompletedAtAfter(
+                driver, BookingStatus.COMPLETED, monthStart);
+        BigDecimal earningsThisMonth = bookingRepository.sumFinalFareByDriverAndStatusAndTripCompletedAtAfter(
+                driver, BookingStatus.COMPLETED, monthStart);
+
+        return DriverStatsResponse.builder()
+                .totalTrips(totalTrips)
+                .tripsThisMonth(tripsThisMonth)
+                .totalEarnings(totalEarnings != null ? totalEarnings : BigDecimal.ZERO)
+                .earningsThisMonth(earningsThisMonth != null ? earningsThisMonth : BigDecimal.ZERO)
+                .build();
+    }
+
     public DriverResponse get(UUID driverId) {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver not found: " + driverId));

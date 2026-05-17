@@ -36,7 +36,18 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     List<Booking> findUninvoicedCompletedBookings(@Param("client") CorporateClient client,
             @Param("from") java.time.Instant from, @Param("to") java.time.Instant to);
 
+    Page<Booking> findByDriver(Driver driver, Pageable pageable);
+    Page<Booking> findByDriverAndStatus(Driver driver, BookingStatus status, Pageable pageable);
+    List<Booking> findByEmployeeAndStatusIn(User employee, List<BookingStatus> statuses);
     Optional<Booking> findFirstByDriverAndStatusIn(Driver driver, List<BookingStatus> statuses);
+    long countByDriverAndStatus(Driver driver, BookingStatus status);
+    long countByDriverAndStatusAndTripCompletedAtAfter(Driver driver, BookingStatus status, Instant after);
+
+    @Query("SELECT COALESCE(SUM(b.finalFare), 0) FROM Booking b WHERE b.driver = :driver AND b.status = :status")
+    java.math.BigDecimal sumFinalFareByDriverAndStatus(@Param("driver") Driver driver, @Param("status") BookingStatus status);
+
+    @Query("SELECT COALESCE(SUM(b.finalFare), 0) FROM Booking b WHERE b.driver = :driver AND b.status = :status AND b.tripCompletedAt > :after")
+    java.math.BigDecimal sumFinalFareByDriverAndStatusAndTripCompletedAtAfter(@Param("driver") Driver driver, @Param("status") BookingStatus status, @Param("after") Instant after);
 
     long countByTenant(Tenant tenant);
     long countByTenantAndStatus(Tenant tenant, BookingStatus status);

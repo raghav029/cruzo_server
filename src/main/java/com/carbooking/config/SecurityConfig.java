@@ -57,7 +57,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,   "/api/vehicles/**").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.PUT,    "/api/vehicles/**").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.DELETE, "/api/vehicles/**").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET,   "/api/drivers/me").hasRole("DRIVER")
+                .requestMatchers(HttpMethod.GET,   "/api/drivers/me/stats").hasRole("DRIVER")
+                .requestMatchers(HttpMethod.PATCH, "/api/drivers/me").hasRole("DRIVER")
+                .requestMatchers(HttpMethod.PATCH, "/api/drivers/me/availability").hasRole("DRIVER")
                 .requestMatchers("/api/drivers/**").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET,    "/api/corporate-clients/my").hasRole("CORPORATE_ADMIN")
+                .requestMatchers(HttpMethod.POST,   "/api/corporate-clients/*/employees").hasAnyRole("FLEET_MANAGER", "CORPORATE_ADMIN")
                 .requestMatchers(HttpMethod.POST,   "/api/corporate-clients/**").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.PUT,    "/api/corporate-clients/**").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.DELETE, "/api/corporate-clients/**").hasRole("FLEET_MANAGER")
@@ -69,10 +75,14 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/bookings/*/reject").hasRole("CORPORATE_ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/bookings/*/assign-driver").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.POST, "/api/bookings/*/auto-assign").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET,   "/api/bookings/my-active").hasRole("EMPLOYEE")
                 .requestMatchers(HttpMethod.GET,   "/api/bookings/my-trip").hasRole("DRIVER")
                 .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/location").hasRole("DRIVER")
                 .requestMatchers(HttpMethod.POST,  "/api/bookings/*/status").hasRole("DRIVER")
                 .requestMatchers(HttpMethod.POST, "/api/bookings").hasRole("EMPLOYEE")
+                .requestMatchers(HttpMethod.GET, "/api/employees/me").hasAnyRole("EMPLOYEE", "CORPORATE_ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/employees/me").hasAnyRole("EMPLOYEE", "CORPORATE_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/employees/me/policy").hasAnyRole("EMPLOYEE", "CORPORATE_ADMIN")
 
                 // Invoice management
                 .requestMatchers(HttpMethod.POST, "/api/invoices/generate").hasRole("FLEET_MANAGER")
@@ -92,7 +102,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/recurring-bookings/**").authenticated()
 
                 // OTP verification
-                .requestMatchers(HttpMethod.POST, "/api/bookings/*/verify-otp").hasRole("DRIVER")
+                .requestMatchers(HttpMethod.POST, "/api/bookings/*/refresh-boarding-otp").hasRole("EMPLOYEE")
+                .requestMatchers(HttpMethod.POST, "/api/bookings/*/verify-boarding-otp").hasRole("DRIVER")
+                .requestMatchers(HttpMethod.POST, "/api/bookings/*/verify-drop-otp").hasRole("DRIVER")
 
                 // Document Expiry
                 .requestMatchers("/api/documents/**").hasRole("FLEET_MANAGER")

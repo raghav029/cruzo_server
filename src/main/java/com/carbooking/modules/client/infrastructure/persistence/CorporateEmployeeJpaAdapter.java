@@ -23,4 +23,5 @@ public class CorporateEmployeeJpaAdapter implements CorporateEmployeePort {
     @Override public Page<CorporateEmployee> findByCorporateClient(CorporateClient client, Pageable pageable) { return repo.findByCorporateClient(client, pageable); }
     @Override public boolean existsByCorporateClientAndEmployeeCode(CorporateClient client, String code) { return repo.existsByCorporateClientAndEmployeeCode(client, code); }
     @Override public CorporateEmployee save(CorporateEmployee employee) { return repo.save(employee); }
+    @Override public Optional<CorporateEmployee> findByUser(User user) { return repo.findByUser(user); }
 }

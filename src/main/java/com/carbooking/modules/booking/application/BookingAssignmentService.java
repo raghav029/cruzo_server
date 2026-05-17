@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -99,6 +100,15 @@ public class BookingAssignmentService extends TenantSupport {
         booking.setAssignmentMode(mode);
         booking.setStatus(BookingStatus.DRIVER_ASSIGNED);
         booking.setDriverAssignedAt(Instant.now());
+
+        Random rng = new Random();
+        String boardingOtp = String.format("%04d", rng.nextInt(10000));
+        String dropOtp;
+        do {
+            dropOtp = String.format("%04d", rng.nextInt(10000));
+        } while (dropOtp.equals(boardingOtp));
+        booking.setBoardingOtp(boardingOtp);
+        booking.setDropOtp(dropOtp);
 
         driver.setAvailability(DriverAvailability.ON_TRIP);
         vehicle.setStatus(VehicleStatus.IN_TRIP);

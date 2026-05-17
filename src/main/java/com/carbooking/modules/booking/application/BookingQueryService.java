@@ -15,7 +15,9 @@ import com.carbooking.modules.booking.domain.port.BookingPort;
 import com.carbooking.modules.booking.domain.port.BookingHistoryPort;
 import com.carbooking.modules.fleet.domain.port.DriverPort;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +53,15 @@ public class BookingQueryService extends TenantSupport {
         Page<Booking> page;
         if ("ROLE_EMPLOYEE".equals(role)) {
             User employee = currentUser();
-            page = bookingRepository.findByEmployee(employee, pageable);
+            Pageable sorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdAt"));
+            page = bookingRepository.findByEmployee(employee, sorted);
+        } else if ("ROLE_DRIVER".equals(role)) {
+            Driver driver = driverRepository.findByUser(currentUser())
+                    .orElseThrow(() -> new com.carbooking.common.exception.ResourceNotFoundException("Driver profile not found"));
+            page = status != null
+                    ? bookingRepository.findByDriverAndStatus(driver, status, pageable)
+                    : bookingRepository.findByDriver(driver, pageable);
         } else if (fromDate != null && toDate != null && status != null) {
             page = bookingRepository.findByTenantAndStatusAndScheduledAtBetween(tenant, status, fromDate, toDate, pageable);
         } else if (fromDate != null && toDate != null) {
@@ -81,11 +91,26 @@ public class BookingQueryService extends TenantSupport {
     public BookingResponse getMyActiveTrip() {
         Driver driver = driverRepository.findByUser(currentUser())
                 .orElseThrow(() -> new ResourceNotFoundException("Driver profile not found"));
-        Booking booking = bookingRepository.findFirstByDriverAndStatusIn(driver, List.of(
+        return bookingRepository.findFirstByDriverAndStatusIn(driver, List.of(
                 BookingStatus.DRIVER_ASSIGNED, BookingStatus.DRIVER_EN_ROUTE,
                 BookingStatus.ARRIVED, BookingStatus.IN_PROGRESS))
-                .orElseThrow(() -> new ResourceNotFoundException("No active trip found"));
-        return bookingMapper.toResponse(booking);
+                .map(bookingMapper::toResponse)
+                .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingResponse> myActive() {
+        User employee = currentUser();
+        List<BookingStatus> activeStatuses = List.of(
+            BookingStatus.DRIVER_ASSIGNED,
+            BookingStatus.DRIVER_EN_ROUTE,
+            BookingStatus.ARRIVED,
+            BookingStatus.IN_PROGRESS
+        );
+        return bookingRepository.findByEmployeeAndStatusIn(employee, activeStatuses)
+                .stream()
+                .map(bookingMapper::toResponse)
+                .toList();
     }
 
     private Booking findAndVerify(UUID bookingId) {

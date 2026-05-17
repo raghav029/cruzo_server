@@ -64,8 +64,10 @@ public class NotificationService {
 
     public void notifyDriverAssigned(Booking booking) {
         if (booking.getDriver() == null) return;
-        String toEmployee = String.format("Driver %s has been assigned for your ride on %s. Ref: %s",
-                booking.getDriver().getUser().getFullName(), booking.getScheduledAt(), shortId(booking));
+        String toEmployee = String.format(
+                "Driver %s assigned for your ride on %s. Boarding OTP: %s | Drop OTP: %s. Keep these safe. Ref: %s",
+                booking.getDriver().getUser().getFullName(), booking.getScheduledAt(),
+                booking.getBoardingOtp(), booking.getDropOtp(), shortId(booking));
         sendSms(booking, booking.getEmployee(), "DRIVER_ASSIGNED", toEmployee);
 
         String toDriver = String.format("New trip assigned. Pickup: %s at %s. Drop: %s. Ref: %s",
@@ -115,7 +117,7 @@ public class NotificationService {
     }
 
     public void sendOtpSms(Booking booking, String otp) {
-        String msg = String.format("Your boarding OTP is %s. Valid for 10 minutes. Ref: %s", otp, shortId(booking));
+        String msg = String.format("Your boarding OTP is %s. Use it when the driver arrives. Ref: %s", otp, shortId(booking));
         sendSms(booking, booking.getEmployee(), "BOARDING_OTP", msg);
     }
 

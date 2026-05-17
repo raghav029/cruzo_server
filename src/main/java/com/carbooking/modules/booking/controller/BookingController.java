@@ -41,6 +41,12 @@ public class BookingController {
         return ResponseHelper.created(bookingService.create(request));
     }
 
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @GetMapping("/my-active")
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> myActive() {
+        return ResponseEntity.ok(ApiResponse.ok(bookingService.myActive()));
+    }
+
     @PreAuthorize("hasAnyRole('FLEET_MANAGER', 'CORPORATE_ADMIN', 'EMPLOYEE', 'DRIVER')")
     @GetMapping
     public ResponseEntity<ApiResponse<PagedResponse<BookingResponse>>> list(
@@ -72,13 +78,13 @@ public class BookingController {
         return ResponseHelper.ok(bookingService.getMyActiveTrip());
     }
 
-    @PreAuthorize("hasRole('FLEET_MANAGER')")
+    @PreAuthorize("hasAnyRole('FLEET_MANAGER', 'CORPORATE_ADMIN')")
     @PostMapping("/{bookingId}/approve")
     public ResponseEntity<ApiResponse<BookingResponse>> approve(@PathVariable UUID bookingId) {
         return ResponseHelper.ok(bookingService.approve(bookingId));
     }
 
-    @PreAuthorize("hasRole('FLEET_MANAGER')")
+    @PreAuthorize("hasAnyRole('FLEET_MANAGER', 'CORPORATE_ADMIN')")
     @PostMapping("/{bookingId}/reject")
     public ResponseEntity<ApiResponse<BookingResponse>> reject(
             @PathVariable UUID bookingId,
@@ -124,11 +130,25 @@ public class BookingController {
         return ResponseHelper.ok(bookingService.cancel(bookingId, request != null ? request : new CancelBookingRequest()));
     }
 
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PostMapping("/{bookingId}/refresh-boarding-otp")
+    public ResponseEntity<ApiResponse<BookingResponse>> refreshBoardingOtp(@PathVariable UUID bookingId) {
+        return ResponseEntity.ok(ApiResponse.ok(bookingService.refreshBoardingOtp(bookingId)));
+    }
+
     @PreAuthorize("hasRole('DRIVER')")
-    @PostMapping("/{bookingId}/verify-otp")
-    public ResponseEntity<ApiResponse<BookingResponse>> verifyOtp(
+    @PostMapping("/{bookingId}/verify-boarding-otp")
+    public ResponseEntity<ApiResponse<BookingResponse>> verifyBoardingOtp(
             @PathVariable UUID bookingId,
             @Valid @RequestBody VerifyOtpRequest request) {
-        return ResponseHelper.ok(bookingService.verifyOtp(bookingId, request));
+        return ResponseHelper.ok(bookingService.verifyBoardingOtp(bookingId, request));
+    }
+
+    @PreAuthorize("hasRole('DRIVER')")
+    @PostMapping("/{bookingId}/verify-drop-otp")
+    public ResponseEntity<ApiResponse<BookingResponse>> verifyDropOtp(
+            @PathVariable UUID bookingId,
+            @Valid @RequestBody VerifyOtpRequest request) {
+        return ResponseHelper.ok(bookingService.verifyDropOtp(bookingId, request));
     }
 }

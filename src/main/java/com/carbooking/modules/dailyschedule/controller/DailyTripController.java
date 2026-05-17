@@ -89,6 +89,12 @@ public class DailyTripController {
     }
 
     @PreAuthorize("hasRole('DRIVER')")
+    @PostMapping("/{id}/start")
+    public ResponseEntity<ApiResponse<DailyTripResponse>> startTrip(@PathVariable UUID id) {
+        return ResponseHelper.ok(dailyTripService.startTrip(id));
+    }
+
+    @PreAuthorize("hasRole('DRIVER')")
     @PostMapping("/{id}/complete")
     public ResponseEntity<ApiResponse<DailyTripResponse>> completeTrip(@PathVariable UUID id) {
         return ResponseHelper.ok(dailyTripService.completeTrip(id));

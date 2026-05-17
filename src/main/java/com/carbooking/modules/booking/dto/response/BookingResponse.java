@@ -21,6 +21,7 @@ public class BookingResponse {
     private String employeeName;
     private UUID driverId;
     private String driverName;
+    private String driverPhone;
     private UUID vehicleId;
     private String vehiclePlate;
     private AssignmentMode assignmentMode;
@@ -49,5 +50,7 @@ public class BookingResponse {
     private BigDecimal driverCurrentLat;
     private BigDecimal driverCurrentLng;
     private Instant locationUpdatedAt;
+    private String boardingOtp;
+    private String dropOtp;
     private Instant otpVerifiedAt;
 }

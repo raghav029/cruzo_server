@@ -7,7 +7,9 @@ import com.carbooking.common.util.ResponseHelper;
 import com.carbooking.modules.fleet.application.DriverService;
 import com.carbooking.modules.fleet.dto.request.CreateDriverRequest;
 import com.carbooking.modules.fleet.dto.request.UpdateDriverRequest;
+import com.carbooking.modules.fleet.dto.request.UpdateDriverSelfRequest;
 import com.carbooking.modules.fleet.dto.response.DriverResponse;
+import com.carbooking.modules.fleet.dto.response.DriverStatsResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,32 @@ public class DriverController {
     public ResponseEntity<ApiResponse<DriverResponse>> create(
             @Valid @RequestBody CreateDriverRequest request) {
         return ResponseHelper.created(driverService.create(request));
+    }
+
+    @PreAuthorize("hasRole('FLEET_MANAGER') or hasRole('DRIVER')")
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<DriverResponse>> getMe() {
+        return ResponseHelper.ok(driverService.getMe());
+    }
+
+    @PreAuthorize("hasRole('DRIVER') or hasRole('FLEET_MANAGER')")
+    @GetMapping("/me/stats")
+    public ResponseEntity<ApiResponse<DriverStatsResponse>> getMyStats() {
+        return ResponseHelper.ok(driverService.getMyStats());
+    }
+
+    @PreAuthorize("hasRole('DRIVER')")
+    @PatchMapping("/me")
+    public ResponseEntity<ApiResponse<DriverResponse>> updateMe(
+            @Valid @RequestBody UpdateDriverSelfRequest request) {
+        return ResponseHelper.ok(driverService.updateMe(request));
+    }
+
+    @PreAuthorize("hasRole('DRIVER') or hasRole('FLEET_MANAGER')")
+    @PatchMapping("/me/availability")
+    public ResponseEntity<ApiResponse<DriverResponse>> updateMyAvailability(
+            @RequestParam DriverAvailability availability) {
+        return ResponseHelper.ok(driverService.updateMyAvailability(availability));
     }
 
     @GetMapping

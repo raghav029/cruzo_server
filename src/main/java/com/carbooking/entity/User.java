@@ -39,4 +39,8 @@ public class User extends AuditableEntity {
 
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "corporate_client_id")
+    private CorporateClient corporateClient;
 }
