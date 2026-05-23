@@ -49,4 +49,7 @@ public class BookingJpaAdapter implements BookingPort {
     @Override public Booking save(Booking booking) { return repo.save(booking); }
     @Override public List<Object[]> countGroupedByHour(UUID tenantId, String tz, Instant from, Instant to) { return repo.countGroupedByHour(tenantId, tz, from, to); }
     @Override public List<Object[]> sumRevenueGroupedByDay(UUID tenantId, String tz, Instant from, Instant to) { return repo.sumRevenueGroupedByDay(tenantId, tz, from, to); }
+    @Override public long countByTenantAndBookingType(Tenant tenant, com.carbooking.entity.enums.BookingType bookingType) { return repo.countByTenantAndBookingType(tenant, bookingType); }
+    @Override public long countByTenantAndBookingTypeAndCreatedAtBetween(Tenant tenant, com.carbooking.entity.enums.BookingType bookingType, Instant from, Instant to) { return repo.countByTenantAndBookingTypeAndCreatedAtBetween(tenant, bookingType, from, to); }
+    @Override public Optional<Booking> findActiveByCustomerId(UUID customerId) { return repo.findActiveByCustomerId(customerId); }
 }
