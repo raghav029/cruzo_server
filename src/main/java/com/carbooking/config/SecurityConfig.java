@@ -77,6 +77,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,   "/api/drivers/me/stats").hasRole("DRIVER")
                 .requestMatchers(HttpMethod.PATCH, "/api/drivers/me").hasRole("DRIVER")
                 .requestMatchers(HttpMethod.PATCH, "/api/drivers/me/availability").hasRole("DRIVER")
+
+                // Reviews
+                .requestMatchers(HttpMethod.POST, "/api/bookings/*/review").hasAnyRole("EMPLOYEE", "CUSTOMER")
+                .requestMatchers(HttpMethod.GET, "/api/reviews").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET, "/api/drivers/*/reviews").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET, "/api/drivers/*/rating").hasRole("FLEET_MANAGER")
+
                 .requestMatchers("/api/drivers/**").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.GET,    "/api/corporate-clients/my").hasRole("CORPORATE_ADMIN")
                 .requestMatchers(HttpMethod.POST,   "/api/corporate-clients/*/employees").hasAnyRole("FLEET_MANAGER", "CORPORATE_ADMIN")
