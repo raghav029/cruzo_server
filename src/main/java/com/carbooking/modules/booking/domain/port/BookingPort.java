@@ -40,4 +40,25 @@ public interface BookingPort {
     Booking save(Booking booking);
     List<Object[]> countGroupedByHour(UUID tenantId, String tz, Instant from, Instant to);
     List<Object[]> sumRevenueGroupedByDay(UUID tenantId, String tz, Instant from, Instant to);
+
+    // Corporate Dashboard
+    long countByCorporateClientAndStatus(CorporateClient client, BookingStatus status);
+    long countByCorporateClientAndCreatedAtBetween(CorporateClient client, Instant from, Instant to);
+    long countCancelledByCorporateClientAndCreatedAtBetween(CorporateClient client, Instant from, Instant to);
+    BigDecimal sumSpendByCorporateClientAndTripCompletedAtBetween(CorporateClient client, Instant from, Instant to);
+    List<Object[]> sumSpendGroupedByDayForClient(UUID clientId, String tz, Instant from, Instant to);
+    List<Booking> findUpcomingByCorporateClient(CorporateClient client, Instant now, org.springframework.data.domain.Pageable pageable);
+
+    // B2C Dashboard
+    BigDecimal sumLifetimeSpendByCustomerId(UUID customerId);
+    long countByCustomerIdAndStatus(UUID customerId, BookingStatus status);
+    long countByCustomerIdAndCreatedAtBetween(UUID customerId, Instant from, Instant to);
+    BigDecimal sumFinalFareByCustomerIdAndTripCompletedAtBetween(UUID customerId, Instant from, Instant to);
+    List<Booking> findUpcomingByCustomerId(UUID customerId, Instant now, org.springframework.data.domain.Pageable pageable);
+    List<Booking> findRecentByCustomerId(UUID customerId, org.springframework.data.domain.Pageable pageable);
+    java.util.Optional<Booking> findActiveByCustomerId(UUID customerId);
+
+    // Fleet Dashboard
+    long countByTenantAndBookingType(Tenant tenant, com.carbooking.entity.enums.BookingType bookingType);
+    long countByTenantAndBookingTypeAndCreatedAtBetween(Tenant tenant, com.carbooking.entity.enums.BookingType bookingType, Instant from, Instant to);
 }

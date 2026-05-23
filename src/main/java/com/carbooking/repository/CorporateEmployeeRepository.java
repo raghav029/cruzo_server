@@ -14,4 +14,6 @@ public interface CorporateEmployeeRepository extends JpaRepository<CorporateEmpl
     Page<CorporateEmployee> findByCorporateClient(CorporateClient client, Pageable pageable);
     Optional<CorporateEmployee> findByUser(User user);
     boolean existsByCorporateClientAndEmployeeCode(CorporateClient client, String employeeCode);
+
+    long countByCorporateClient(CorporateClient client);
 }
