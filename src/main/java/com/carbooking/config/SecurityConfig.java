@@ -65,7 +65,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("SUPER_ADMIN")
 
                 // Dashboard
-                .requestMatchers(HttpMethod.GET, "/api/dashboard/**").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET, "/api/dashboard/fleet").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET, "/api/dashboard/corporate").hasRole("CORPORATE_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/b2c/dashboard").hasRole("CUSTOMER")
 
                 // Fleet Manager setup
                 .requestMatchers(HttpMethod.POST,   "/api/vehicles/**").hasRole("FLEET_MANAGER")
