@@ -22,8 +22,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -103,8 +105,12 @@ public class ReviewService extends TenantSupport {
     @Transactional(readOnly = true)
     public Page<ReviewResponse> listDriverReviews(UUID driverId, Pageable pageable) {
         requireTenant();
-        driverRepo.findById(driverId)
+        var driver = driverRepo.findById(driverId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver not found"));
+        UUID currentTenantId = SecurityUtils.getCurrentTenantId();
+        if (!driver.getTenant().getId().equals(currentTenantId)) {
+            throw new UnauthorizedException("Access denied");
+        }
         return reviewRepo.findByDriverId(driverId, pageable).map(this::toResponse);
     }
 
@@ -113,6 +119,10 @@ public class ReviewService extends TenantSupport {
         requireTenant();
         var driver = driverRepo.findById(driverId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver not found"));
+        UUID currentTenantId = SecurityUtils.getCurrentTenantId();
+        if (!driver.getTenant().getId().equals(currentTenantId)) {
+            throw new UnauthorizedException("Access denied");
+        }
 
         double avg = reviewRepo.averageRatingByDriverId(driverId);
         avg = Math.round(avg * 100.0) / 100.0;
@@ -128,7 +138,10 @@ public class ReviewService extends TenantSupport {
 
     private ReviewResponse toResponse(Review r) {
         List<String> tags = (r.getTags() != null && !r.getTags().isBlank())
-                ? List.of(r.getTags().split(","))
+                ? Arrays.stream(r.getTags().split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isBlank())
+                        .collect(Collectors.toList())
                 : List.of();
         return ReviewResponse.builder()
                 .id(r.getId())
