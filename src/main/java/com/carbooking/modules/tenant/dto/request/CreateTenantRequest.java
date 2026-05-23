@@ -1,5 +1,6 @@
 package com.carbooking.modules.tenant.dto.request;
 
+import com.carbooking.entity.enums.BookingMode;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -24,6 +25,8 @@ public class CreateTenantRequest {
 
     @Size(max = 20)
     private String supportPhone;
+
+    private BookingMode bookingMode = BookingMode.CORPORATE;
 
     private String logoUrl;
 

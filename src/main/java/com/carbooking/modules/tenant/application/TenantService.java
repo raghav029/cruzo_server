@@ -1,5 +1,6 @@
 package com.carbooking.modules.tenant.application;
 
+import com.carbooking.entity.enums.BookingMode;
 import com.carbooking.common.enums.DriverAvailability;
 import com.carbooking.common.enums.Role;
 import com.carbooking.common.enums.UserStatus;
@@ -69,6 +70,7 @@ public class TenantService {
                 .primaryColor(request.getPrimaryColor())
                 .secondaryColor(request.getSecondaryColor())
                 .active(true)
+                .bookingMode(request.getBookingMode() != null ? request.getBookingMode() : BookingMode.CORPORATE)
                 .build();
         tenant = tenantRepository.save(tenant);
 
@@ -112,6 +114,7 @@ public class TenantService {
         if (request.getPrimaryColor() != null) tenant.setPrimaryColor(request.getPrimaryColor());
         if (request.getSecondaryColor() != null) tenant.setSecondaryColor(request.getSecondaryColor());
         if (request.getActive() != null) tenant.setActive(request.getActive());
+        if (request.getBookingMode() != null) tenant.setBookingMode(request.getBookingMode());
 
         return toResponse(tenantRepository.save(tenant));
     }
@@ -161,6 +164,7 @@ public class TenantService {
                 .logoUrl(t.getLogoUrl())
                 .primaryColor(t.getPrimaryColor())
                 .secondaryColor(t.getSecondaryColor())
+                .bookingMode(t.getBookingMode())
                 .active(t.isActive())
                 .createdAt(t.getCreatedAt())
                 .updatedAt(t.getUpdatedAt())

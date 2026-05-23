@@ -1,5 +1,6 @@
 package com.carbooking.modules.tenant.dto.request;
 
+import com.carbooking.entity.enums.BookingMode;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -25,6 +26,8 @@ public class UpdateTenantRequest {
 
     @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "Secondary color must be a valid hex color e.g. #6B7280")
     private String secondaryColor;
+
+    private BookingMode bookingMode;
 
     // null = no change, true = activate, false = suspend
     private Boolean active;

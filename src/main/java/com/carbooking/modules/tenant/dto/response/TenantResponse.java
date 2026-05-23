@@ -1,5 +1,6 @@
 package com.carbooking.modules.tenant.dto.response;
 
+import com.carbooking.entity.enums.BookingMode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,6 +19,7 @@ public class TenantResponse {
     private String logoUrl;
     private String primaryColor;
     private String secondaryColor;
+    private BookingMode bookingMode;
     private boolean active;
     private Instant createdAt;
     private Instant updatedAt;
