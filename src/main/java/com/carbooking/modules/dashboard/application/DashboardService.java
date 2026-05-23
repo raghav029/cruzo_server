@@ -169,6 +169,9 @@ public class DashboardService extends TenantSupport {
         UUID userId = SecurityUtils.getCurrentUserId();
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
+        if (!user.getTenant().getId().equals(currentTenantId())) {
+            throw new UnauthorizedException("Access denied");
+        }
         CorporateClient client = user.getCorporateClient();
         if (client == null) {
             throw new UnauthorizedException("No corporate client linked to this account");
