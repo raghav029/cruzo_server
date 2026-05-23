@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     long countByTenantAndRole(Tenant tenant, com.carbooking.common.enums.Role role);
     List<User> findByTenantAndRole(Tenant tenant, Role role);
     Optional<User> findByEmailAndTenant(String email, Tenant tenant);
+    Optional<User> findByRefreshToken(String refreshToken);
 }

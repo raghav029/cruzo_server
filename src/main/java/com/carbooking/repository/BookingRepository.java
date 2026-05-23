@@ -2,6 +2,7 @@ package com.carbooking.repository;
 
 import com.carbooking.common.enums.BookingStatus;
 import com.carbooking.entity.Booking;
+import com.carbooking.entity.enums.BookingType;
 import com.carbooking.entity.CorporateClient;
 import com.carbooking.entity.Driver;
 import com.carbooking.entity.Tenant;
@@ -76,4 +77,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
                    "GROUP BY day ORDER BY day", nativeQuery = true)
     List<Object[]> sumRevenueGroupedByDay(@Param("tenantId") UUID tenantId, @Param("tz") String tz,
                                           @Param("from") Instant from, @Param("to") Instant to);
+
+    Page<Booking> findByCustomerIdAndBookingType(UUID customerId, BookingType bookingType, Pageable pageable);
+    Page<Booking> findByTenantIdAndBookingType(UUID tenantId, BookingType bookingType, Pageable pageable);
 }

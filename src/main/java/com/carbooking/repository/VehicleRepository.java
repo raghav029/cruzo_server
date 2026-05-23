@@ -24,4 +24,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, UUID> {
 
     List<Vehicle> findByTenantAndInsuranceExpiryBeforeAndStatusNot(Tenant tenant, LocalDate date, VehicleStatus status);
     List<Vehicle> findByTenantAndFitnessExpiryBeforeAndStatusNot(Tenant tenant, LocalDate date, VehicleStatus status);
+
+    List<Vehicle> findByTenantIdAndPublishedTrue(UUID tenantId);
+    Optional<Vehicle> findByIdAndTenantIdAndPublishedTrue(UUID id, UUID tenantId);
 }
