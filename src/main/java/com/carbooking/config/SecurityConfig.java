@@ -42,9 +42,23 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Preflight
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // B2C public auth (no token required)
+                .requestMatchers(HttpMethod.POST, "/api/b2c/auth/send-otp").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/b2c/auth/verify-otp").permitAll()
+
+                // Public catalog + contact (no token required)
+                .requestMatchers(HttpMethod.GET,  "/api/public/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/public/**").permitAll()
+
+                // B2C authenticated customer routes
+                .requestMatchers(HttpMethod.GET, "/api/b2c/auth/me").hasRole("CUSTOMER")
+                .requestMatchers(HttpMethod.PUT, "/api/b2c/auth/me").hasRole("CUSTOMER")
+                .requestMatchers("/api/b2c/bookings/**").hasRole("CUSTOMER")
+
                 // Public
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/forgot-password").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
                 // Super Admin
