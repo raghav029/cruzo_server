@@ -1,6 +1,7 @@
 package com.carbooking.entity;
 
 import com.carbooking.common.util.AuditableEntity;
+import com.carbooking.entity.enums.BookingMode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,4 +36,16 @@ public class Tenant extends AuditableEntity {
 
     @Column(nullable = false)
     private String timezone = "Asia/Kolkata";
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "booking_mode", nullable = false, length = 20)
+    private BookingMode bookingMode = BookingMode.CORPORATE;
+
+    public boolean supportsB2C() {
+        return bookingMode == BookingMode.B2C || bookingMode == BookingMode.BOTH;
+    }
+
+    public boolean supportsCorporate() {
+        return bookingMode == BookingMode.CORPORATE || bookingMode == BookingMode.BOTH;
+    }
 }

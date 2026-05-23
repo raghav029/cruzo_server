@@ -43,4 +43,10 @@ public class User extends AuditableEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "corporate_client_id")
     private CorporateClient corporateClient;
+
+    @Column(name = "refresh_token", length = 512)
+    private String refreshToken;
+
+    @Column(name = "refresh_token_expires_at")
+    private Instant refreshTokenExpiresAt;
 }

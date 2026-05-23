@@ -4,6 +4,7 @@ import com.carbooking.common.enums.AssignmentMode;
 import com.carbooking.common.enums.BookingStatus;
 import com.carbooking.common.enums.VehicleType;
 import com.carbooking.common.util.AuditableEntity;
+import com.carbooking.entity.enums.BookingType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,12 +21,48 @@ public class Booking extends AuditableEntity {
     private Tenant tenant;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "corporate_client_id", nullable = false)
+    @JoinColumn(name = "corporate_client_id")
     private CorporateClient corporateClient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_user_id", nullable = false)
+    @JoinColumn(name = "employee_user_id")
     private User employee;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "booking_type", nullable = false, length = 20)
+    private BookingType bookingType = BookingType.CORPORATE;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "package_id")
+    private VehiclePackage vehiclePackage;
+
+    @Column(name = "extra_km", precision = 8, scale = 2)
+    private BigDecimal extraKm;
+
+    @Column(name = "extra_hours", precision = 8, scale = 2)
+    private BigDecimal extraHours;
+
+    @Column(name = "drive_batta_applied", precision = 10, scale = 2)
+    private BigDecimal driveBattaApplied;
+
+    @Column(name = "outstation_batta_applied", precision = 10, scale = 2)
+    private BigDecimal outstationBattaApplied;
+
+    @Column(name = "night_batta_applied", precision = 10, scale = 2)
+    private BigDecimal nightBattaApplied;
+
+    @Column(name = "parking_fee", precision = 10, scale = 2)
+    private BigDecimal parkingFee;
+
+    @Column(name = "toll_fee", precision = 10, scale = 2)
+    private BigDecimal tollFee;
+
+    @Column(name = "gst_amount", precision = 10, scale = 2)
+    private BigDecimal gstAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id")
