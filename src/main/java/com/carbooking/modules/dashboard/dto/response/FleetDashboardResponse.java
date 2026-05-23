@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class FleetDashboardResponse {
 
     private BigDecimal revenueThisMonth;
