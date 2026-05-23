@@ -19,6 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import com.carbooking.dto.request.vehicle.AddVehicleImageRequest;
+import com.carbooking.dto.request.vehicle.AddVehiclePackageRequest;
+import com.carbooking.dto.response.vehicle.VehiclePackageResponse;
+import com.carbooking.entity.VehicleImage;
+import com.carbooking.entity.VehiclePackage;
+import com.carbooking.repository.VehicleImageRepository;
+import com.carbooking.repository.VehiclePackageRepository;
 import com.carbooking.modules.fleet.application.VehicleMapper;
 
 @Service
@@ -27,12 +34,18 @@ public class VehicleService extends TenantSupport {
     private final VehicleMapper vehicleMapper;
     private final VehiclePort vehicleRepository;
     private final BookingPort bookingRepository;
+    private final VehiclePackageRepository vehiclePackageRepo;
+    private final VehicleImageRepository vehicleImageRepo;
 
     public VehicleService(VehiclePort vehicleRepository, BookingPort bookingRepository,
-                                 VehicleMapper vehicleMapper) {
+                                 VehicleMapper vehicleMapper,
+                                 VehiclePackageRepository vehiclePackageRepo,
+                                 VehicleImageRepository vehicleImageRepo) {
         this.vehicleRepository = vehicleRepository;
         this.bookingRepository = bookingRepository;
         this.vehicleMapper = vehicleMapper;
+        this.vehiclePackageRepo = vehiclePackageRepo;
+        this.vehicleImageRepo = vehicleImageRepo;
     }
 
     @Transactional
@@ -114,6 +127,59 @@ public class VehicleService extends TenantSupport {
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + vehicleId));
         assertSameTenant(vehicle.getTenant().getId());
         return vehicle;
+    }
+
+    @Transactional
+    public VehiclePackageResponse addPackage(UUID vehicleId, AddVehiclePackageRequest req) {
+        Vehicle vehicle = findAndVerify(vehicleId);
+        VehiclePackage pkg = VehiclePackage.builder()
+            .vehicle(vehicle).name(req.getName()).baseRental(req.getBaseRental())
+            .includedKm(req.getIncludedKm()).includedHours(req.getIncludedHours())
+            .extraPerKm(req.getExtraPerKm()).extraPerHour(req.getExtraPerHour())
+            .driveBatta(req.getDriveBatta()).outstationBatta(req.getOutstationBatta())
+            .nightBatta(req.getNightBatta()).build();
+        vehiclePackageRepo.save(pkg);
+        return toPackageResponse(pkg);
+    }
+
+    @Transactional
+    public void deletePackage(UUID vehicleId, UUID packageId) {
+        findAndVerify(vehicleId);
+        VehiclePackage pkg = vehiclePackageRepo.findByIdAndVehicleId(packageId, vehicleId)
+            .orElseThrow(() -> new ResourceNotFoundException("Package not found"));
+        vehiclePackageRepo.delete(pkg);
+    }
+
+    @Transactional
+    public void addImage(UUID vehicleId, AddVehicleImageRequest req) {
+        Vehicle vehicle = findAndVerify(vehicleId);
+        vehicleImageRepo.save(VehicleImage.builder()
+            .vehicle(vehicle).imageUrl(req.getImageUrl())
+            .displayOrder(req.getDisplayOrder()).build());
+    }
+
+    @Transactional
+    public void deleteImage(UUID vehicleId, UUID imageId) {
+        findAndVerify(vehicleId);
+        VehicleImage image = vehicleImageRepo.findById(imageId)
+            .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
+        vehicleImageRepo.delete(image);
+    }
+
+    @Transactional
+    public void setPublished(UUID vehicleId, boolean published) {
+        Vehicle vehicle = findAndVerify(vehicleId);
+        vehicle.setPublished(published);
+        vehicleRepository.save(vehicle);
+    }
+
+    private VehiclePackageResponse toPackageResponse(VehiclePackage p) {
+        return VehiclePackageResponse.builder()
+            .id(p.getId()).name(p.getName()).baseRental(p.getBaseRental())
+            .includedKm(p.getIncludedKm()).includedHours(p.getIncludedHours())
+            .extraPerKm(p.getExtraPerKm()).extraPerHour(p.getExtraPerHour())
+            .driveBatta(p.getDriveBatta()).outstationBatta(p.getOutstationBatta())
+            .nightBatta(p.getNightBatta()).build();
     }
 
     private boolean isActiveBookingStatus(String status) {

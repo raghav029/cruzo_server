@@ -5,6 +5,9 @@ import com.carbooking.common.response.ApiResponse;
 import com.carbooking.common.response.PagedResponse;
 import com.carbooking.common.util.ResponseHelper;
 import com.carbooking.modules.fleet.application.VehicleService;
+import com.carbooking.dto.request.vehicle.AddVehicleImageRequest;
+import com.carbooking.dto.request.vehicle.AddVehiclePackageRequest;
+import com.carbooking.dto.response.vehicle.VehiclePackageResponse;
 import com.carbooking.modules.fleet.dto.request.CreateVehicleRequest;
 import com.carbooking.modules.fleet.dto.request.UpdateVehicleRequest;
 import com.carbooking.modules.fleet.dto.response.VehicleResponse;
@@ -57,5 +60,46 @@ public class VehicleController {
     public ResponseEntity<Void> delete(@PathVariable UUID vehicleId) {
         vehicleService.delete(vehicleId);
         return ResponseHelper.noContent();
+    }
+
+    @PostMapping("/{vehicleId}/packages")
+    public ResponseEntity<ApiResponse<VehiclePackageResponse>> addPackage(
+            @PathVariable UUID vehicleId,
+            @Valid @RequestBody AddVehiclePackageRequest req) {
+        return ResponseHelper.created(vehicleService.addPackage(vehicleId, req));
+    }
+
+    @DeleteMapping("/{vehicleId}/packages/{packageId}")
+    public ResponseEntity<ApiResponse<Void>> deletePackage(
+            @PathVariable UUID vehicleId, @PathVariable UUID packageId) {
+        vehicleService.deletePackage(vehicleId, packageId);
+        return ResponseHelper.noContent();
+    }
+
+    @PostMapping("/{vehicleId}/images")
+    public ResponseEntity<ApiResponse<Void>> addImage(
+            @PathVariable UUID vehicleId,
+            @Valid @RequestBody AddVehicleImageRequest req) {
+        vehicleService.addImage(vehicleId, req);
+        return ResponseHelper.created(null);
+    }
+
+    @DeleteMapping("/{vehicleId}/images/{imageId}")
+    public ResponseEntity<ApiResponse<Void>> deleteImage(
+            @PathVariable UUID vehicleId, @PathVariable UUID imageId) {
+        vehicleService.deleteImage(vehicleId, imageId);
+        return ResponseHelper.noContent();
+    }
+
+    @PostMapping("/{vehicleId}/publish")
+    public ResponseEntity<ApiResponse<Void>> publish(@PathVariable UUID vehicleId) {
+        vehicleService.setPublished(vehicleId, true);
+        return ResponseHelper.ok(null);
+    }
+
+    @PostMapping("/{vehicleId}/unpublish")
+    public ResponseEntity<ApiResponse<Void>> unpublish(@PathVariable UUID vehicleId) {
+        vehicleService.setPublished(vehicleId, false);
+        return ResponseHelper.ok(null);
     }
 }
