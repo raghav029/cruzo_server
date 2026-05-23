@@ -26,4 +26,12 @@ public class SecurityUtils {
     public static String getCurrentRole() {
         return getCurrentUser().getRole();
     }
+
+    public static String getCurrentBookingMode() {
+        return getCurrentUser().getBookingMode();
+    }
+
+    public static UUID getCurrentCustomerId() {
+        return getCurrentUser().getUserId();
+    }
 }

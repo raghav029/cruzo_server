@@ -20,7 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.carbooking.common.exception.UnauthorizedException;
+
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Slf4j
@@ -61,22 +64,55 @@ public class AuthService {
             throw new BusinessRuleException("Your organisation account has been suspended. Please contact support.");
         }
 
+        String bookingMode = user.getTenant() != null
+                ? user.getTenant().getBookingMode().name()
+                : null;
         String token = jwtTokenProvider.generateToken(
                 user.getId(),
                 user.getTenant() != null ? user.getTenant().getId() : null,
-                user.getRole().name()
+                user.getRole().name(),
+                bookingMode
         );
 
+        String refreshToken = jwtTokenProvider.generateRefreshToken();
+        Instant refreshTokenExpiresAt = Instant.now().plus(30, ChronoUnit.DAYS);
+
         user.setLastLoginAt(Instant.now());
+        user.setRefreshToken(refreshToken);
+        user.setRefreshTokenExpiresAt(refreshTokenExpiresAt);
+        userRepository.save(user);
 
         return LoginResponse.builder()
                 .token(token)
+                .refreshToken(refreshToken)
                 .userId(user.getId())
                 .role(user.getRole().name())
                 .tenantId(user.getTenant() != null ? user.getTenant().getId() : null)
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .expiresAt(Instant.now().plusMillis(jwtExpirationMs))
+                .build();
+    }
+
+    @Transactional
+    public LoginResponse refreshAccessToken(String refreshToken) {
+        User user = userRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+        if (jwtTokenProvider.isRefreshTokenExpired(user.getRefreshTokenExpiresAt())) {
+            throw new UnauthorizedException("Refresh token expired");
+        }
+        String refreshBookingMode = user.getTenant() != null
+                ? user.getTenant().getBookingMode().name()
+                : null;
+        String newToken = jwtTokenProvider.generateToken(
+                user.getId(),
+                user.getTenant() != null ? user.getTenant().getId() : null,
+                user.getRole().name(),
+                refreshBookingMode
+        );
+        return LoginResponse.builder()
+                .token(newToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

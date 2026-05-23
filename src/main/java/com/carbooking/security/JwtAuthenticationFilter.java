@@ -34,8 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String tenantIdStr = claims.get("tenantId", String.class);
             UUID tenantId = tenantIdStr != null ? UUID.fromString(tenantIdStr) : null;
             String role = claims.get("role", String.class);
+            String bookingMode = claims.get("bookingMode", String.class);
 
-            UserPrincipal principal = new UserPrincipal(userId, tenantId, claims.getSubject(), null, role, true);
+            UserPrincipal principal = new UserPrincipal(userId, tenantId, claims.getSubject(), null, role, bookingMode, true);
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);

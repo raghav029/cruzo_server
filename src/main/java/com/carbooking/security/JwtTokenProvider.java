@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -41,6 +42,20 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String generateToken(UUID userId, UUID tenantId, String role, String bookingMode) {
+        Date now = new Date();
+        return Jwts.builder()
+                .subject(userId.toString())
+                .issuer(issuer)
+                .claim("tenantId", tenantId != null ? tenantId.toString() : null)
+                .claim("role", role)
+                .claim("bookingMode", bookingMode)
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + expirationMs))
+                .signWith(key)
+                .compact();
+    }
+
     public Claims parseToken(String token) {
         return Jwts.parser()
                 .verifyWith(key)
@@ -57,5 +72,14 @@ public class JwtTokenProvider {
             log.debug("Invalid JWT: {}", e.getMessage());
             return false;
         }
+    }
+
+    public String generateRefreshToken() {
+        return UUID.randomUUID().toString().replace("-", "") +
+               UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public boolean isRefreshTokenExpired(Instant expiresAt) {
+        return expiresAt == null || Instant.now().isAfter(expiresAt);
     }
 }

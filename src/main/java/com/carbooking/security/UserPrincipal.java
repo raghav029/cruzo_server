@@ -17,14 +17,16 @@ public class UserPrincipal implements UserDetails {
     private final String email;
     private final String password;
     private final String role;
+    private final String bookingMode;
     private final boolean active;
 
-    public UserPrincipal(UUID userId, UUID tenantId, String email, String password, String role, boolean active) {
+    public UserPrincipal(UUID userId, UUID tenantId, String email, String password, String role, String bookingMode, boolean active) {
         this.userId = userId;
         this.tenantId = tenantId;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.bookingMode = bookingMode;
         this.active = active;
     }
 
