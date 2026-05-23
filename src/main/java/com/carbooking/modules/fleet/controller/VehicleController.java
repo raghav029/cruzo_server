@@ -70,7 +70,7 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{vehicleId}/packages/{packageId}")
-    public ResponseEntity<ApiResponse<Void>> deletePackage(
+    public ResponseEntity<Void> deletePackage(
             @PathVariable UUID vehicleId, @PathVariable UUID packageId) {
         vehicleService.deletePackage(vehicleId, packageId);
         return ResponseHelper.noContent();
@@ -85,7 +85,7 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{vehicleId}/images/{imageId}")
-    public ResponseEntity<ApiResponse<Void>> deleteImage(
+    public ResponseEntity<Void> deleteImage(
             @PathVariable UUID vehicleId, @PathVariable UUID imageId) {
         vehicleService.deleteImage(vehicleId, imageId);
         return ResponseHelper.noContent();
