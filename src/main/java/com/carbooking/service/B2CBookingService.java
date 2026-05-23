@@ -9,6 +9,7 @@ import com.carbooking.dto.response.b2c.B2CBookingResponse;
 import com.carbooking.dto.response.vehicle.VehiclePackageResponse;
 import com.carbooking.entity.*;
 import com.carbooking.entity.enums.BookingType;
+import com.carbooking.modules.promo.application.PromoCodeService;
 import com.carbooking.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -30,6 +32,7 @@ public class B2CBookingService {
     private final VehiclePackageRepository packageRepo;
     private final BookingStatusHistoryRepository statusHistoryRepo;
     private final B2CPricingEngine pricingEngine;
+    private final PromoCodeService promoCodeService;
 
     @Transactional
     public B2CBookingResponse create(UUID customerId, CreateB2CBookingRequest req) {
@@ -57,6 +60,16 @@ public class B2CBookingService {
         if (req.getScheduledAt().isBefore(Instant.now().plus(2, ChronoUnit.HOURS)))
             throw new BusinessRuleException("Booking must be at least 2 hours in advance");
 
+        BigDecimal estimatedFare = pricingEngine.estimateFare(pkg);
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        String appliedPromoCode = null;
+
+        if (req.getPromoCode() != null && !req.getPromoCode().isBlank()) {
+            discountAmount = promoCodeService.applyPromo(customer.getTenant(), req.getPromoCode(), estimatedFare);
+            appliedPromoCode = req.getPromoCode().toUpperCase();
+            estimatedFare = estimatedFare.subtract(discountAmount);
+        }
+
         Booking booking = Booking.builder()
             .tenant(customer.getTenant())
             .customer(customer)
@@ -69,7 +82,10 @@ public class B2CBookingService {
             .scheduledAt(req.getScheduledAt())
             .notes(req.getNotes())
             .status(BookingStatus.PENDING_APPROVAL)
-            .estimatedFare(pricingEngine.estimateFare(pkg))
+            .estimatedFare(estimatedFare)
+            .promoCode(appliedPromoCode)
+            .discountAmount(discountAmount.compareTo(BigDecimal.ZERO) > 0 ? discountAmount : null)
+            .cityId(req.getCityId())
             .build();
 
         bookingRepo.save(booking);
@@ -162,7 +178,9 @@ public class B2CBookingService {
             .tollFee(b.getTollFee())
             .gstAmount(b.getGstAmount())
             .estimatedFare(b.getEstimatedFare())
+            .discountAmount(b.getDiscountAmount())
             .finalFare(b.getFinalFare())
+            .promoCode(b.getPromoCode())
             .createdAt(b.getCreatedAt())
             .build();
     }

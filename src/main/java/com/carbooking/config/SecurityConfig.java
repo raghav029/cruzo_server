@@ -69,6 +69,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/dashboard/corporate").hasRole("CORPORATE_ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/b2c/dashboard").hasRole("CUSTOMER")
 
+                // Cities — Fleet Manager only
+                .requestMatchers(HttpMethod.POST,   "/api/cities/**").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET,    "/api/cities/**").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.PATCH,  "/api/cities/**").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.DELETE, "/api/cities/**").hasRole("FLEET_MANAGER")
+
                 // Fleet Manager setup
                 .requestMatchers(HttpMethod.POST,   "/api/vehicles/**").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.PUT,    "/api/vehicles/**").hasRole("FLEET_MANAGER")
