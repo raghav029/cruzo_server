@@ -21,8 +21,8 @@ public class PublicVehicleService {
 
     private final VehicleRepository vehicleRepo;
 
-    public List<PublicVehicleResponse> listPublished(UUID tenantId) {
-        return vehicleRepo.findByTenantIdAndPublishedTrue(tenantId)
+    public List<PublicVehicleResponse> listPublished(UUID tenantId, UUID cityId) {
+        return vehicleRepo.findPublishedByTenantAndCity(tenantId, cityId)
             .stream().map(this::toCard).collect(Collectors.toList());
     }
 

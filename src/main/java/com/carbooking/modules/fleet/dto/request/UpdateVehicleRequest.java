@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -25,4 +26,5 @@ public class UpdateVehicleRequest {
     private VehicleStatus status;
     private LocalDate insuranceExpiry;
     private LocalDate fitnessExpiry;
+    private UUID cityId;
 }

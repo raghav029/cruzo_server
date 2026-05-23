@@ -7,6 +7,8 @@ import com.carbooking.entity.Vehicle;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,4 +29,9 @@ public interface VehicleRepository extends JpaRepository<Vehicle, UUID> {
 
     List<Vehicle> findByTenantIdAndPublishedTrue(UUID tenantId);
     Optional<Vehicle> findByIdAndTenantIdAndPublishedTrue(UUID id, UUID tenantId);
+
+    @Query("SELECT v FROM Vehicle v WHERE v.tenant.id = :tenantId AND v.published = true " +
+           "AND (:cityId IS NULL OR v.city IS NULL OR v.city.id = :cityId)")
+    List<Vehicle> findPublishedByTenantAndCity(@Param("tenantId") UUID tenantId,
+                                               @Param("cityId") UUID cityId);
 }

@@ -27,6 +27,8 @@ import com.carbooking.entity.VehiclePackage;
 import com.carbooking.repository.VehicleImageRepository;
 import com.carbooking.repository.VehiclePackageRepository;
 import com.carbooking.modules.fleet.application.VehicleMapper;
+import com.carbooking.entity.ServiceCity;
+import com.carbooking.repository.ServiceCityRepository;
 
 @Service
 public class VehicleService extends TenantSupport {
@@ -36,16 +38,19 @@ public class VehicleService extends TenantSupport {
     private final BookingPort bookingRepository;
     private final VehiclePackageRepository vehiclePackageRepo;
     private final VehicleImageRepository vehicleImageRepo;
+    private final ServiceCityRepository cityRepo;
 
     public VehicleService(VehiclePort vehicleRepository, BookingPort bookingRepository,
                                  VehicleMapper vehicleMapper,
                                  VehiclePackageRepository vehiclePackageRepo,
-                                 VehicleImageRepository vehicleImageRepo) {
+                                 VehicleImageRepository vehicleImageRepo,
+                                 ServiceCityRepository cityRepo) {
         this.vehicleRepository = vehicleRepository;
         this.bookingRepository = bookingRepository;
         this.vehicleMapper = vehicleMapper;
         this.vehiclePackageRepo = vehiclePackageRepo;
         this.vehicleImageRepo = vehicleImageRepo;
+        this.cityRepo = cityRepo;
     }
 
     @Transactional
@@ -69,6 +74,12 @@ public class VehicleService extends TenantSupport {
                 .fitnessExpiry(request.getFitnessExpiry())
                 .status(VehicleStatus.ACTIVE)
                 .build();
+
+        if (request.getCityId() != null) {
+            ServiceCity city = cityRepo.findByIdAndTenant(request.getCityId(), tenant)
+                .orElseThrow(() -> new ResourceNotFoundException("City not found"));
+            vehicle.setCity(city);
+        }
 
         return vehicleMapper.toResponse(vehicleRepository.save(vehicle));
     }
@@ -99,6 +110,11 @@ public class VehicleService extends TenantSupport {
         if (request.getStatus() != null)         vehicle.setStatus(request.getStatus());
         if (request.getInsuranceExpiry() != null) vehicle.setInsuranceExpiry(request.getInsuranceExpiry());
         if (request.getFitnessExpiry() != null)  vehicle.setFitnessExpiry(request.getFitnessExpiry());
+        if (request.getCityId() != null) {
+            ServiceCity city = cityRepo.findByIdAndTenant(request.getCityId(), vehicle.getTenant())
+                .orElseThrow(() -> new ResourceNotFoundException("City not found"));
+            vehicle.setCity(city);
+        }
 
         return vehicleMapper.toResponse(vehicleRepository.save(vehicle));
     }

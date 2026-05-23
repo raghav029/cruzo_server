@@ -23,8 +23,9 @@ public class PublicVehicleController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<PublicVehicleResponse>>> list(
-            @RequestParam UUID tenantId) {
-        return ResponseHelper.ok(publicVehicleService.listPublished(tenantId));
+            @RequestParam UUID tenantId,
+            @RequestParam(required = false) UUID cityId) {
+        return ResponseHelper.ok(publicVehicleService.listPublished(tenantId, cityId));
     }
 
     @GetMapping("/{vehicleId}")
