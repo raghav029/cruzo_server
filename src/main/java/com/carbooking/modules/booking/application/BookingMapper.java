@@ -1,15 +1,30 @@
 package com.carbooking.modules.booking.application;
 
+import com.carbooking.entity.Review;
 import com.carbooking.modules.booking.dto.response.BookingResponse;
 import com.carbooking.modules.booking.dto.response.BookingStatusHistoryResponse;
+import com.carbooking.modules.review.dto.response.ReviewResponse;
 import com.carbooking.entity.Booking;
 import com.carbooking.entity.BookingStatusHistory;
+import com.carbooking.repository.ReviewRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
+@RequiredArgsConstructor
 public class BookingMapper {
 
+    private final ReviewRepository reviewRepository;
+
     public BookingResponse toResponse(Booking booking) {
+        ReviewResponse reviewResponse = reviewRepository.findByBookingId(booking.getId())
+                .map(this::toReviewResponse)
+                .orElse(null);
+
         return BookingResponse.builder()
                 .id(booking.getId())
                 .tenantId(booking.getTenant().getId())
@@ -51,6 +66,27 @@ public class BookingMapper {
                 .boardingOtp(booking.getBoardingOtp())
                 .dropOtp(booking.getDropOtp())
                 .otpVerifiedAt(booking.getOtpVerifiedAt())
+                .review(reviewResponse)
+                .build();
+    }
+
+    private ReviewResponse toReviewResponse(Review r) {
+        List<String> tags = r.getTags() != null
+                ? Arrays.stream(r.getTags().split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isBlank())
+                        .collect(Collectors.toList())
+                : List.of();
+        return ReviewResponse.builder()
+                .id(r.getId())
+                .bookingId(r.getBooking().getId())
+                .driverId(r.getDriver() != null ? r.getDriver().getId() : null)
+                .driverName(r.getDriver() != null ? r.getDriver().getUser().getFullName() : null)
+                .rating(r.getRating())
+                .comment(r.getComment())
+                .tags(tags)
+                .reviewerType(r.getReviewerType())
+                .createdAt(r.getCreatedAt())
                 .build();
     }
 

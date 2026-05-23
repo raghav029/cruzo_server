@@ -3,6 +3,7 @@ package com.carbooking.modules.booking.dto.response;
 import com.carbooking.common.enums.AssignmentMode;
 import com.carbooking.common.enums.BookingStatus;
 import com.carbooking.common.enums.VehicleType;
+import com.carbooking.modules.review.dto.response.ReviewResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -53,4 +54,5 @@ public class BookingResponse {
     private String boardingOtp;
     private String dropOtp;
     private Instant otpVerifiedAt;
+    private ReviewResponse review; // null if no review submitted yet
 }
