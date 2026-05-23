@@ -30,6 +30,7 @@ public class BookingJpaAdapter implements BookingPort {
     @Override public Page<Booking> findByEmployee(User employee, Pageable pageable) { return repo.findByEmployee(employee, pageable); }
     @Override public Page<Booking> findByCorporateClient(CorporateClient client, Pageable pageable) { return repo.findByCorporateClient(client, pageable); }
     @Override public Page<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status, Pageable pageable) { return repo.findByTenantAndStatus(tenant, status, pageable); }
+    @Override public List<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status) { return repo.findByTenantAndStatus(tenant, status); }
     @Override public Page<Booking> findByTenantAndScheduledAtBetween(Tenant tenant, Instant from, Instant to, Pageable pageable) { return repo.findByTenantAndScheduledAtBetween(tenant, from, to, pageable); }
     @Override public Page<Booking> findByTenantAndStatusAndScheduledAtBetween(Tenant tenant, BookingStatus status, Instant from, Instant to, Pageable pageable) { return repo.findByTenantAndStatusAndScheduledAtBetween(tenant, status, from, to, pageable); }
     @Override public Page<Booking> findByDriver(Driver driver, Pageable pageable) { return repo.findByDriver(driver, pageable); }
@@ -52,4 +53,6 @@ public class BookingJpaAdapter implements BookingPort {
     @Override public long countByTenantAndBookingType(Tenant tenant, com.carbooking.entity.enums.BookingType bookingType) { return repo.countByTenantAndBookingType(tenant, bookingType); }
     @Override public long countByTenantAndBookingTypeAndCreatedAtBetween(Tenant tenant, com.carbooking.entity.enums.BookingType bookingType, Instant from, Instant to) { return repo.countByTenantAndBookingTypeAndCreatedAtBetween(tenant, bookingType, from, to); }
     @Override public Optional<Booking> findActiveByCustomerId(UUID customerId) { return repo.findActiveByCustomerId(customerId); }
+    @Override public List<Booking> findUpcomingByCustomerId(UUID customerId, Instant now, org.springframework.data.domain.Pageable pageable) { return repo.findUpcomingByCustomerId(customerId, now, pageable); }
+    @Override public List<Booking> findRecentByCustomerId(UUID customerId, org.springframework.data.domain.Pageable pageable) { return repo.findRecentByCustomerId(customerId, pageable); }
 }

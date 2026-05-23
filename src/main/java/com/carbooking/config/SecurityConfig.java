@@ -98,6 +98,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/bookings/*/reject").hasRole("CORPORATE_ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/bookings/*/assign-driver").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.POST, "/api/bookings/*/auto-assign").hasRole("FLEET_MANAGER")
+                .requestMatchers(HttpMethod.GET,   "/api/bookings/live").hasRole("FLEET_MANAGER")
                 .requestMatchers(HttpMethod.GET,   "/api/bookings/my-active").hasRole("EMPLOYEE")
                 .requestMatchers(HttpMethod.GET,   "/api/bookings/my-trip").hasRole("DRIVER")
                 .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/location").hasRole("DRIVER")

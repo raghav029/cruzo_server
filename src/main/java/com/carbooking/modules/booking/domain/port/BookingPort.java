@@ -21,6 +21,7 @@ public interface BookingPort {
     Page<Booking> findByEmployee(User employee, Pageable pageable);
     Page<Booking> findByCorporateClient(CorporateClient client, Pageable pageable);
     Page<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status, Pageable pageable);
+    List<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status);
     Page<Booking> findByTenantAndScheduledAtBetween(Tenant tenant, Instant from, Instant to, Pageable pageable);
     Page<Booking> findByTenantAndStatusAndScheduledAtBetween(Tenant tenant, BookingStatus status, Instant from, Instant to, Pageable pageable);
     Page<Booking> findByDriver(Driver driver, Pageable pageable);

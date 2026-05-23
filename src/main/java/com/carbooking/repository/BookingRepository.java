@@ -25,6 +25,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     Page<Booking> findByEmployee(User employee, Pageable pageable);
     Page<Booking> findByCorporateClient(CorporateClient client, Pageable pageable);
     Page<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status, Pageable pageable);
+    List<Booking> findByTenantAndStatus(Tenant tenant, BookingStatus status);
     Page<Booking> findByTenantAndScheduledAtBetween(Tenant tenant, java.time.Instant from, java.time.Instant to, Pageable pageable);
     Page<Booking> findByTenantAndStatusAndScheduledAtBetween(Tenant tenant, BookingStatus status, java.time.Instant from, java.time.Instant to, Pageable pageable);
 

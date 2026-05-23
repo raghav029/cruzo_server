@@ -10,6 +10,7 @@ import com.carbooking.entity.Tenant;
 import com.carbooking.entity.User;
 import com.carbooking.modules.booking.dto.response.BookingResponse;
 import com.carbooking.modules.booking.dto.response.BookingStatusHistoryResponse;
+import com.carbooking.modules.booking.dto.response.LiveTripResponse;
 import com.carbooking.modules.booking.application.BookingMapper;
 import com.carbooking.modules.booking.domain.port.BookingPort;
 import com.carbooking.modules.booking.domain.port.BookingHistoryPort;
@@ -111,6 +112,48 @@ public class BookingQueryService extends TenantSupport {
                 .stream()
                 .map(bookingMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<LiveTripResponse> getLiveTrips() {
+        Tenant tenant = requireTenant();
+        return bookingRepository.findByTenantAndStatus(tenant, BookingStatus.IN_PROGRESS)
+                .stream()
+                .map(this::toLiveTripResponse)
+                .toList();
+    }
+
+    private LiveTripResponse toLiveTripResponse(Booking b) {
+        String passengerName = b.getEmployee() != null
+                ? b.getEmployee().getFullName()
+                : (b.getCustomer() != null ? b.getCustomer().getName() : "Unknown");
+
+        String vehicleName = b.getVehicle() != null
+                ? b.getVehicle().getMake() + " " + b.getVehicle().getModel()
+                : "Unknown Vehicle";
+
+        String driverName = b.getDriver() != null && b.getDriver().getUser() != null
+                ? b.getDriver().getUser().getFullName()
+                : null;
+
+        String driverPhone = b.getDriver() != null && b.getDriver().getUser() != null
+                ? b.getDriver().getUser().getPhone()
+                : null;
+
+        return LiveTripResponse.builder()
+                .bookingId(b.getId())
+                .vehicleName(vehicleName)
+                .plateNumber(b.getVehicle() != null ? b.getVehicle().getPlateNumber() : null)
+                .driverName(driverName)
+                .driverPhone(driverPhone)
+                .passengerName(passengerName)
+                .pickupAddress(b.getPickupAddress())
+                .dropAddress(b.getDropAddress())
+                .driverLat(b.getDriverCurrentLat())
+                .driverLng(b.getDriverCurrentLng())
+                .locationUpdatedAt(b.getLocationUpdatedAt())
+                .scheduledAt(b.getScheduledAt())
+                .build();
     }
 
     private Booking findAndVerify(UUID bookingId) {

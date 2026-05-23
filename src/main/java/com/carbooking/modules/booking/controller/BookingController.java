@@ -13,6 +13,7 @@ import com.carbooking.modules.booking.dto.request.UpdateDriverLocationRequest;
 import com.carbooking.modules.booking.dto.request.VerifyOtpRequest;
 import com.carbooking.modules.booking.dto.response.BookingResponse;
 import com.carbooking.modules.booking.dto.response.BookingStatusHistoryResponse;
+import com.carbooking.modules.booking.dto.response.LiveTripResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,12 @@ public class BookingController {
     public ResponseEntity<ApiResponse<BookingResponse>> create(
             @Valid @RequestBody CreateBookingRequest request) {
         return ResponseHelper.created(bookingService.create(request));
+    }
+
+    @PreAuthorize("hasRole('FLEET_MANAGER')")
+    @GetMapping("/live")
+    public ResponseEntity<ApiResponse<List<LiveTripResponse>>> getLiveTrips() {
+        return ResponseHelper.ok(bookingService.getLiveTrips());
     }
 
     @PreAuthorize("hasRole('EMPLOYEE')")

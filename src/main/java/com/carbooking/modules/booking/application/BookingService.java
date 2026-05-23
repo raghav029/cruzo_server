@@ -9,6 +9,7 @@ import com.carbooking.modules.booking.dto.request.UpdateDriverLocationRequest;
 import com.carbooking.modules.booking.dto.request.VerifyOtpRequest;
 import com.carbooking.modules.booking.dto.response.BookingResponse;
 import com.carbooking.modules.booking.dto.response.BookingStatusHistoryResponse;
+import com.carbooking.modules.booking.dto.response.LiveTripResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +56,11 @@ public class BookingService {
     @Transactional(readOnly = true)
     public BookingResponse getMyActiveTrip() {
         return bookingQueryService.getMyActiveTrip();
+    }
+
+    @Transactional(readOnly = true)
+    public List<LiveTripResponse> getLiveTrips() {
+        return bookingQueryService.getLiveTrips();
     }
 
     @Transactional(readOnly = true)
