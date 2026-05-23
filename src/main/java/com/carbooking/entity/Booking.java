@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "bookings")
@@ -126,6 +127,12 @@ public class Booking extends AuditableEntity {
     @Column(name = "cancellation_fee", precision = 10, scale = 2)
     private BigDecimal cancellationFee;
 
+    @Column(name = "promo_code")
+    private String promoCode;
+
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    private BigDecimal discountAmount;
+
     @Column(name = "approved_at")
     private Instant approvedAt;
 
@@ -161,4 +168,7 @@ public class Booking extends AuditableEntity {
 
     @Column(name = "otp_verified_at")
     private Instant otpVerifiedAt;
+
+    @Column(name = "city_id")
+    private UUID cityId;
 }

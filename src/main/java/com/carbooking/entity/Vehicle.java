@@ -76,4 +76,8 @@ public class Vehicle extends AuditableEntity {
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<VehiclePackage> packages = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id")
+    private ServiceCity city;
 }
