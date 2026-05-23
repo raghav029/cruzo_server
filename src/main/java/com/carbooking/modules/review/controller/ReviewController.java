@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -29,7 +30,10 @@ public class ReviewController {
             @PathVariable UUID bookingId,
             @Valid @RequestBody CreateReviewRequest request,
             Authentication auth) {
-        String role = auth.getAuthorities().iterator().next().getAuthority();
+        String role = auth.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("");
         return ResponseHelper.created(reviewService.submitReview(bookingId, request, role));
     }
 
