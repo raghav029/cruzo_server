@@ -81,6 +81,7 @@ public class B2CBookingService {
             .dropAddress(req.getDropAddress())
             .scheduledAt(req.getScheduledAt())
             .notes(req.getNotes())
+            .occasion(req.getOccasion())
             .status(BookingStatus.PENDING_APPROVAL)
             .estimatedFare(estimatedFare)
             .promoCode(appliedPromoCode)

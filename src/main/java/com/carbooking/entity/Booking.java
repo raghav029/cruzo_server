@@ -108,6 +108,9 @@ public class Booking extends AuditableEntity {
 
     private String notes;
 
+    @Column(name = "occasion")
+    private String occasion;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status = BookingStatus.DRAFT;

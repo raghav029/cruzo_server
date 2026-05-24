@@ -5,6 +5,7 @@ import com.carbooking.common.util.ResponseHelper;
 import com.carbooking.modules.report.application.ReportService;
 import com.carbooking.modules.report.dto.response.CorporateSpendResponse;
 import com.carbooking.modules.report.dto.response.FleetSummaryResponse;
+import com.carbooking.modules.report.dto.response.OverviewStatsResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,5 +38,19 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
         return ResponseHelper.ok(reportService.corporateSpend(corporateClientId, fromDate, toDate));
+    }
+
+    @GetMapping("/overview")
+    public ResponseEntity<ApiResponse<OverviewStatsResponse>> overview() {
+        return ResponseHelper.ok(reportService.getOverviewStats());
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> export(@RequestParam(defaultValue = "bookings") String type) {
+        byte[] data = reportService.exportReport(type);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=" + type + ".csv")
+                .header("Content-Type", "text/csv")
+                .body(data);
     }
 }

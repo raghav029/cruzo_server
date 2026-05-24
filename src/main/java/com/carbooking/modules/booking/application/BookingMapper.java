@@ -1,6 +1,11 @@
 package com.carbooking.modules.booking.application;
 
+import com.carbooking.entity.Addon;
+import com.carbooking.entity.BookingAddon;
 import com.carbooking.entity.Review;
+import com.carbooking.modules.addon.domain.port.AddonPort;
+import com.carbooking.modules.addon.domain.port.BookingAddonPort;
+import com.carbooking.modules.addon.dto.response.BookingAddonResponse;
 import com.carbooking.modules.booking.dto.response.BookingResponse;
 import com.carbooking.modules.booking.dto.response.BookingStatusHistoryResponse;
 import com.carbooking.modules.review.dto.response.ReviewResponse;
@@ -19,6 +24,8 @@ import java.util.stream.Collectors;
 public class BookingMapper {
 
     private final ReviewRepository reviewRepository;
+    private final BookingAddonPort bookingAddonRepository;
+    private final AddonPort addonRepository;
 
     public BookingResponse toResponse(Booking booking) {
         ReviewResponse reviewResponse = reviewRepository.findByBookingId(booking.getId())
@@ -47,6 +54,7 @@ public class BookingMapper {
                 .vehicleTypeRequested(booking.getVehicleTypeRequested())
                 .scheduledAt(booking.getScheduledAt())
                 .notes(booking.getNotes())
+                .occasion(booking.getOccasion())
                 .status(booking.getStatus())
                 .cancellationReason(booking.getCancellationReason())
                 .rejectionReason(booking.getRejectionReason())
@@ -67,6 +75,7 @@ public class BookingMapper {
                 .dropOtp(booking.getDropOtp())
                 .otpVerifiedAt(booking.getOtpVerifiedAt())
                 .review(reviewResponse)
+                .addons(mapAddons(booking.getId()))
                 .build();
     }
 
@@ -99,5 +108,20 @@ public class BookingMapper {
                 .reason(history.getReason())
                 .transitionedAt(history.getTransitionedAt())
                 .build();
+    }
+
+    private List<BookingAddonResponse> mapAddons(java.util.UUID bookingId) {
+        return bookingAddonRepository.findByBookingId(bookingId).stream()
+                .map(ba -> {
+                    Addon addon = addonRepository.findById(ba.getAddonId()).orElse(null);
+                    return BookingAddonResponse.builder()
+                            .addonId(ba.getAddonId())
+                            .name(addon != null ? addon.getName() : null)
+                            .quantity(ba.getQuantity())
+                            .priceSnapshot(ba.getPriceSnapshot())
+                            .total(ba.getPriceSnapshot().multiply(java.math.BigDecimal.valueOf(ba.getQuantity())))
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }

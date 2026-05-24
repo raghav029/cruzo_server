@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import com.carbooking.modules.fleet.application.DriverMapper;
+import com.carbooking.repository.ReviewRepository;
 
 @Slf4j
 @Service
@@ -40,15 +41,18 @@ public class DriverService extends TenantSupport {
     private final DriverMapper driverMapper;
     private final DriverPort driverRepository;
     private final BookingPort bookingRepository;
+    private final ReviewRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationService notificationService;
 
     public DriverService(DriverPort driverRepository, BookingPort bookingRepository,
+                         ReviewRepository reviewRepository,
                          PasswordEncoder passwordEncoder,
                          @Lazy NotificationService notificationService,
                                  DriverMapper driverMapper) {
         this.driverRepository = driverRepository;
         this.bookingRepository = bookingRepository;
+        this.reviewRepository = reviewRepository;
         this.passwordEncoder = passwordEncoder;
         this.notificationService = notificationService;
         this.driverMapper = driverMapper;
@@ -99,7 +103,14 @@ public class DriverService extends TenantSupport {
         Page<Driver> page = (availability != null)
                 ? driverRepository.findByTenantAndAvailability(tenant, availability, pageable)
                 : driverRepository.findByTenant(tenant, pageable);
-        return page.map(driverMapper::toResponse);
+        Instant todayMidnight = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        return page.map(driver -> {
+            Double avgRating = reviewRepository.averageRatingByDriverId(driver.getId());
+            long totalTrips = bookingRepository.countByDriverAndStatus(driver, BookingStatus.COMPLETED);
+            long tripsToday = bookingRepository.countByDriverAndStatusAndTripCompletedAtAfter(
+                    driver, BookingStatus.COMPLETED, todayMidnight);
+            return driverMapper.toResponse(driver, avgRating, totalTrips, tripsToday);
+        });
     }
 
     @Transactional(readOnly = true)

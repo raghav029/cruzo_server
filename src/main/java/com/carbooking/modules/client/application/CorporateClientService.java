@@ -23,8 +23,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.carbooking.common.enums.BookingStatus;
 import com.carbooking.common.enums.VehicleType;
 import com.carbooking.common.exception.BusinessRuleException;
+import com.carbooking.modules.booking.domain.port.BookingPort;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 import com.carbooking.modules.client.application.CorporateClientMapper;
@@ -35,14 +39,17 @@ public class CorporateClientService extends TenantSupport {
 
     private final CorporateClientMapper clientMapper;
     private final CorporateClientPort clientRepository;
+    private final BookingPort bookingRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationService notificationService;
 
     public CorporateClientService(CorporateClientPort clientRepository,
+                                   BookingPort bookingRepository,
                                    PasswordEncoder passwordEncoder,
                                    @Lazy NotificationService notificationService,
                                  CorporateClientMapper clientMapper) {
         this.clientRepository = clientRepository;
+        this.bookingRepository = bookingRepository;
         this.passwordEncoder = passwordEncoder;
         this.notificationService = notificationService;
         this.clientMapper = clientMapper;
@@ -74,7 +81,20 @@ public class CorporateClientService extends TenantSupport {
     @Transactional(readOnly = true)
     public Page<CorporateClientResponse> list(Pageable pageable) {
         Tenant tenant = requireTenant();
-        return clientRepository.findByTenant(tenant, pageable).map(clientMapper::toResponse);
+        return clientRepository.findByTenant(tenant, pageable).map(client -> {
+            long totalTrips = bookingRepository.countByCorporateClientAndStatus(client, BookingStatus.COMPLETED);
+            BigDecimal totalSpend = bookingRepository.sumSpendByCorporateClientAndTripCompletedAtBetween(
+                    client, Instant.EPOCH, Instant.now());
+            if (totalSpend == null) totalSpend = BigDecimal.ZERO;
+            String tier = computeTier(totalSpend);
+            return clientMapper.toResponse(client, totalTrips, totalSpend, tier);
+        });
+    }
+
+    private String computeTier(BigDecimal totalSpend) {
+        if (totalSpend.compareTo(BigDecimal.valueOf(1_000_000)) >= 0) return "BLACK";
+        if (totalSpend.compareTo(BigDecimal.valueOf(300_000)) >= 0) return "GOLD";
+        return "SILVER";
     }
 
     @Transactional(readOnly = true)

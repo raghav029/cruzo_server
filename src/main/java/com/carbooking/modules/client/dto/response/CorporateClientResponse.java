@@ -25,4 +25,7 @@ public class CorporateClientResponse {
     private String allowedVehicleTypes;
     private Instant createdAt;
     private Instant updatedAt;
+    private Long totalTrips;
+    private BigDecimal totalSpend;
+    private String tier;
 }

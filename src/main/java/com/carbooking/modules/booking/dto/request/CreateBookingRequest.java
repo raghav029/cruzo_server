@@ -36,4 +36,5 @@ public class CreateBookingRequest {
     private Instant scheduledAt;
 
     private String notes;
+    private String occasion;
 }

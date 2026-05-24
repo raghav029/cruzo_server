@@ -3,12 +3,14 @@ package com.carbooking.modules.booking.dto.response;
 import com.carbooking.common.enums.AssignmentMode;
 import com.carbooking.common.enums.BookingStatus;
 import com.carbooking.common.enums.VehicleType;
+import com.carbooking.modules.addon.dto.response.BookingAddonResponse;
 import com.carbooking.modules.review.dto.response.ReviewResponse;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -35,6 +37,7 @@ public class BookingResponse {
     private VehicleType vehicleTypeRequested;
     private Instant scheduledAt;
     private String notes;
+    private String occasion;
     private BookingStatus status;
     private String cancellationReason;
     private String rejectionReason;
@@ -54,5 +57,6 @@ public class BookingResponse {
     private String boardingOtp;
     private String dropOtp;
     private Instant otpVerifiedAt;
-    private ReviewResponse review; // null if no review submitted yet
+    private ReviewResponse review;
+    private List<BookingAddonResponse> addons;
 }

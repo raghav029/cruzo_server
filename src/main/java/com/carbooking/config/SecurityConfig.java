@@ -122,6 +122,17 @@ public class SecurityConfig {
                 // Reports
                 .requestMatchers("/api/reports/fleet-summary").hasRole("FLEET_MANAGER")
                 .requestMatchers("/api/reports/corporate-spend").hasRole("CORPORATE_ADMIN")
+                .requestMatchers("/api/reports/overview").hasAnyRole("FLEET_MANAGER", "CORPORATE_ADMIN")
+                .requestMatchers("/api/reports/export").hasAnyRole("FLEET_MANAGER", "CORPORATE_ADMIN")
+
+                // Promo Codes
+                .requestMatchers(HttpMethod.POST, "/api/promo-codes/validate").authenticated()
+                .requestMatchers("/api/promo-codes/**").hasRole("FLEET_MANAGER")
+
+                // Addons
+                .requestMatchers(HttpMethod.GET, "/api/addons/**").hasAnyRole("FLEET_MANAGER", "CORPORATE_ADMIN", "EMPLOYEE")
+                .requestMatchers("/api/addons/**").hasRole("FLEET_MANAGER")
+                .requestMatchers("/api/bookings/*/addons").authenticated()
 
                 // SOS Alerts
                 .requestMatchers(HttpMethod.POST, "/api/sos").authenticated()

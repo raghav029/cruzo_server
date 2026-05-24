@@ -25,4 +25,7 @@ public class DriverResponse {
     private UUID currentVehicleId;
     private Instant createdAt;
     private Instant updatedAt;
+    private Double avgRating;
+    private Long totalTrips;
+    private Long tripsToday;
 }

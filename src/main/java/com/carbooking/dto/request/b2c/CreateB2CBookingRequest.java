@@ -28,6 +28,7 @@ public class CreateB2CBookingRequest {
     private String dropAddress;
 
     private String notes;
+    private String occasion;
     private boolean outstationTrip = false;
     private String promoCode;
     private UUID cityId;

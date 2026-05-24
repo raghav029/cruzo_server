@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 public class CorporateClientMapper {
 
     public CorporateClientResponse toResponse(CorporateClient c) {
+        return toResponse(c, null, null, null);
+    }
+
+    public CorporateClientResponse toResponse(CorporateClient c, Long totalTrips, java.math.BigDecimal totalSpend, String tier) {
         return CorporateClientResponse.builder()
                 .id(c.getId())
                 .tenantId(c.getTenant().getId())
@@ -23,6 +27,9 @@ public class CorporateClientMapper {
                 .allowedVehicleTypes(c.getAllowedVehicleTypes())
                 .createdAt(c.getCreatedAt())
                 .updatedAt(c.getUpdatedAt())
+                .totalTrips(totalTrips)
+                .totalSpend(totalSpend)
+                .tier(tier)
                 .build();
     }
 }

@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 public class DriverMapper {
 
     public DriverResponse toResponse(Driver d) {
+        return toResponse(d, null, null, null);
+    }
+
+    public DriverResponse toResponse(Driver d, Double avgRating, Long totalTrips, Long tripsToday) {
         return DriverResponse.builder()
                 .id(d.getId())
                 .tenantId(d.getTenant().getId())
@@ -22,6 +26,9 @@ public class DriverMapper {
                 .currentVehicleId(d.getCurrentVehicle() != null ? d.getCurrentVehicle().getId() : null)
                 .createdAt(d.getCreatedAt())
                 .updatedAt(d.getUpdatedAt())
+                .avgRating(avgRating)
+                .totalTrips(totalTrips)
+                .tripsToday(tripsToday)
                 .build();
     }
 }

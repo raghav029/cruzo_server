@@ -1,6 +1,7 @@
 package com.carbooking.modules.booking.application;
 
 import com.carbooking.common.enums.BookingStatus;
+import com.carbooking.entity.enums.BookingType;
 import com.carbooking.common.enums.VehicleType;
 import com.carbooking.common.exception.BusinessRuleException;
 import com.carbooking.common.exception.ResourceNotFoundException;
@@ -112,6 +113,8 @@ public class BookingCreationService extends TenantSupport {
                 .vehicleTypeRequested(request.getVehicleTypeRequested())
                 .scheduledAt(request.getScheduledAt())
                 .notes(request.getNotes())
+                .occasion(request.getOccasion())
+                .bookingType(BookingType.CORPORATE)
                 .status(BookingStatus.PENDING_APPROVAL)
                 .estimatedFare(estimateFare(tenant, request.getVehicleTypeRequested()))
                 .build();
