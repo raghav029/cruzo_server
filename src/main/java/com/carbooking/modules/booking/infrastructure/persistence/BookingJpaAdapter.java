@@ -55,4 +55,14 @@ public class BookingJpaAdapter implements BookingPort {
     @Override public Optional<Booking> findActiveByCustomerId(UUID customerId) { return repo.findActiveByCustomerId(customerId); }
     @Override public List<Booking> findUpcomingByCustomerId(UUID customerId, Instant now, org.springframework.data.domain.Pageable pageable) { return repo.findUpcomingByCustomerId(customerId, now, pageable); }
     @Override public List<Booking> findRecentByCustomerId(UUID customerId, org.springframework.data.domain.Pageable pageable) { return repo.findRecentByCustomerId(customerId, pageable); }
+    @Override public BigDecimal sumLifetimeSpendByCustomerId(UUID customerId) { return repo.sumLifetimeSpendByCustomerId(customerId); }
+    @Override public long countByCustomerIdAndStatus(UUID customerId, BookingStatus status) { return repo.countByCustomerIdAndStatus(customerId, status); }
+    @Override public long countByCustomerIdAndCreatedAtBetween(UUID customerId, Instant from, Instant to) { return repo.countByCustomerIdAndCreatedAtBetween(customerId, from, to); }
+    @Override public BigDecimal sumFinalFareByCustomerIdAndTripCompletedAtBetween(UUID customerId, Instant from, Instant to) { return repo.sumFinalFareByCustomerIdAndTripCompletedAtBetween(customerId, from, to); }
+    @Override public long countByCorporateClientAndStatus(CorporateClient client, BookingStatus status) { return repo.countByCorporateClientAndStatus(client, status); }
+    @Override public long countByCorporateClientAndCreatedAtBetween(CorporateClient client, Instant from, Instant to) { return repo.countByCorporateClientAndCreatedAtBetween(client, from, to); }
+    @Override public long countCancelledByCorporateClientAndCreatedAtBetween(CorporateClient client, Instant from, Instant to) { return repo.countCancelledByCorporateClientAndCreatedAtBetween(client, from, to); }
+    @Override public BigDecimal sumSpendByCorporateClientAndTripCompletedAtBetween(CorporateClient client, Instant from, Instant to) { return repo.sumSpendByCorporateClientAndTripCompletedAtBetween(client, from, to); }
+    @Override public List<Object[]> sumSpendGroupedByDayForClient(UUID clientId, String tz, Instant from, Instant to) { return repo.sumSpendGroupedByDayForClient(clientId, tz, from, to); }
+    @Override public List<Booking> findUpcomingByCorporateClient(CorporateClient client, Instant now, org.springframework.data.domain.Pageable pageable) { return repo.findUpcomingByCorporateClient(client, now, pageable); }
 }

@@ -1,0 +1,2 @@
+ALTER TABLE users ADD COLUMN refresh_token VARCHAR(512);
+ALTER TABLE users ADD COLUMN refresh_token_expires_at TIMESTAMP WITH TIME ZONE;

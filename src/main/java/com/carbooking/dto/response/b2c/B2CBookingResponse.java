@@ -32,6 +32,8 @@ public class B2CBookingResponse {
     private BigDecimal tollFee;
     private BigDecimal gstAmount;
     private BigDecimal estimatedFare;
+    private BigDecimal discountAmount;
     private BigDecimal finalFare;
+    private String promoCode;
     private Instant createdAt;
 }

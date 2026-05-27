@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Tag(name = "Authentication")
 @RestController
 @RequestMapping("/api/auth")
@@ -39,5 +41,14 @@ public class AuthController {
             @Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(request);
         return ResponseHelper.ok("Password changed successfully");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<LoginResponse>> refresh(@RequestBody Map<String, String> body) {
+        String refreshToken = body.get("refreshToken");
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("refreshToken is required"));
+        }
+        return ResponseHelper.ok(authService.refreshAccessToken(refreshToken));
     }
 }
